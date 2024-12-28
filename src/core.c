@@ -31,6 +31,7 @@ bool p2d_create_object(struct p2d_object *object) {
     // TODO:
     // detect it's intersection within world tiles, and insert it into each tile to track
 
+    p2d_state.p2d_object_count++;
     return true;
 }
 
@@ -39,6 +40,7 @@ bool p2d_remove_object(struct p2d_object *object) {
     // TODO:
     // detect it's intersection within world tiles, and remove it from each tile
 
+    p2d_state.p2d_object_count--;
     return true;
 }
 

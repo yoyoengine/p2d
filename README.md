@@ -19,3 +19,7 @@ how can we do logging from p2d into yoyoengine?
 detect object spanning multiple cells and add it to all cells it spans
 
 - this involves making decisions on how the linear algebra will be structured for the lib
+
+## considerations
+
+in C, make sure we call a rigidbody_sync function to re-update the simulation with ecs changes
