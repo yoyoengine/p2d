@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(SDL3)
 target_link_libraries(p2d-test PRIVATE SDL3-shared)
 target_include_directories(p2d-test PRIVATE ${SDL3_SOURCE_DIR}/include)
 
-# add and link against p2d, one dir above is CMakeLists.txt root
+# p2d
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/.. p2d)
 target_link_libraries(p2d-test PRIVATE p2d)
 target_include_directories(p2d-test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)

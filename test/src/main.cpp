@@ -11,7 +11,9 @@
 
 #include <vector>
 
-#include <p2d/p2d.h>
+extern "C" {
+    #include <p2d/p2d.h>
+}
 
 std::vector<p2d_object> objects;
 
