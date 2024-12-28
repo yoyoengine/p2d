@@ -13,8 +13,16 @@
 #ifndef P2D_H
 #define P2D_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "export.h"
 #include "core.h"
 #include "world.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // P2D_H

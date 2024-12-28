@@ -13,3 +13,9 @@ A 2 dimensional rigidbody physics system written for yoyoengine
 abandoning seperate colliders and rigidbodies
 
 how can we do logging from p2d into yoyoengine?
+
+## TODO:
+
+detect object spanning multiple cells and add it to all cells it spans
+
+- this involves making decisions on how the linear algebra will be structured for the lib

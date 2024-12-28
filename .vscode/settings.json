@@ -2,6 +2,7 @@
     "files.associations": {
         "*.h": "c",
         "*.yoyo": "json",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "vector": "cpp"
     }
 }

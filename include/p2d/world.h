@@ -24,7 +24,7 @@ extern struct p2d_world_node *p2d_world[P2D_MAX_OBJECTS];
 /*
     Converts an object's position to a hash bucket tile index
 */
-P2D_API int p2d_world_hash(float x, float y);
+P2D_API int p2d_world_hash(int tile_x, int tile_y);
 
 /*
     Inserts an object into the world
@@ -32,8 +32,19 @@ P2D_API int p2d_world_hash(float x, float y);
     Uses the hash table under the hood to place
     the object in it's world tile bucket
 */
-P2D_API void p2d_world_insert(struct p2d_object *object);
+P2D_API void p2d_world_insert(int world_hash, struct p2d_object *object);
 
-P2D_API void p2d_world_remove(struct p2d_object *object);
+/*
+    Removes an object from the world
+
+    Uses the hash table under the hood to remove
+    the object from it's world tile bucket
+*/
+P2D_API void p2d_world_remove(int world_hash, struct p2d_object *object);
+
+/*
+    Unmap every object from the hash table
+*/
+P2D_API void p2d_world_remove_all();
 
 #endif // P2D_WORLD_H

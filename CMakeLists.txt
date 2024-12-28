@@ -6,7 +6,7 @@ include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
 add_library(p2d
-    src/p2d.c
+    src/core.c
     src/world.c
 )
 
@@ -35,3 +35,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W4 /WX)
 endif()
+
+# build with debug symbols
+set(CMAKE_BUILD_TYPE Debug)
