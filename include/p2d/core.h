@@ -9,6 +9,7 @@
 #define P2D_CORE_H
 
 #include "p2d/export.h"
+#include "p2d/queue.h"
 
 #include <stdbool.h>
 #include <stdarg.h>
@@ -42,12 +43,32 @@
 
 
 /*
+    How callbacks and resolutions work:
+
+    Engine will call p2d_step() every frame.
+    During p2d_step(), p2d will use the on_collision and on_trigger callbacks to notify the engine of collisions and triggers as they occur.
+
+    Once p2d_step() resolves, it will return a built list of simulation changes for the engine to consume and update
+    in it's own ECS or other entity management system.
+*/
+
+struct p2d_cb_data {
+    struct p2d_object *a;
+    struct p2d_object *b;
+};
+
+/*
     I really like runtime state tracking in my libraries,
     particularly for visualization and debug overlays.
 */
 struct p2d_state {
     // config
-    int _cell_size; // passed on init
+    // passed on init
+    int _cell_size;
+
+    // callbacks
+    void (*on_collision)(struct p2d_cb_data *data);
+    void (*on_trigger)(struct p2d_cb_data *data);
 
     // tracking / debug
     int p2d_object_count;
@@ -65,7 +86,8 @@ enum p2d_object_type {
 struct p2d_object {
     // defining information
     enum p2d_object_type type;
-    bool is_static;
+    bool is_static;     // if true, this object is immovable
+    bool is_trigger;    // if true, this object does not collide with other objects, but instead emits events when collided with
 
     // location
     float x;
@@ -87,13 +109,19 @@ struct p2d_object {
             float radius;
         } circle;
     };
+
+    /*
+        User data, useful for things like identifying this object in an
+        engine's ECS to operate on its impulses when collisions occur.
+    */
+    void *user_data;
 };
 
 /*
     Initialize the p2d simulation
     cell_size: the size of each cell in the world (used for broad phase collision detection)
 */
-P2D_API bool p2d_init(int cell_size);
+P2D_API bool p2d_init(int cell_size, void (*on_collision)(struct p2d_cb_data *data), void (*on_trigger)(struct p2d_cb_data *data));
 
 /*
     Shutdown the p2d simulation and free its memory
@@ -118,6 +146,6 @@ P2D_API bool p2d_remove_all_objects();
 /*
     Called externally to run one simulation step
 */
-P2D_API void p2d_step(float delta_time);
+P2D_API struct p2d_queue_event * p2d_step(float delta_time);
 
 #endif // P2D_CORE_H

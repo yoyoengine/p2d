@@ -11,6 +11,7 @@ add_library(p2d
     src/detection.c
     src/helpers.c
     src/types.c
+    src/queue.c
 )
 
 target_include_directories(p2d PUBLIC

@@ -55,6 +55,14 @@ void _draw_circle(SDL_Renderer *renderer, int center_x, int center_y, int radius
     }
 }
 
+void collision_callback(p2d_cb_data* data) {
+    printf("collision detected\n");
+}
+
+void trigger_callback(p2d_cb_data* data) {
+    printf("trigger detected\n");
+}
+
 void draw_object(SDL_Renderer* renderer, p2d_object* object) {
     
     struct p2d_aabb aabb = p2d_get_aabb(object);
@@ -103,12 +111,13 @@ int main(int argc, char** argv) {
             .height = 20,
         },
     });
+    // objects[0].user_data = &objects[0];
 
     objects.push_back(p2d_object{
         .type = P2D_OBJECT_CIRCLE,
         .is_static = false,
-        .x = 200,
-        .y = 200,
+        .x = 250,
+        .y = 250,
         .vx = 0,
         .vy = 0,
         .rotation = 0,
@@ -117,6 +126,7 @@ int main(int argc, char** argv) {
             .height = 100,
         },
     });
+    // objects[1].user_data = &objects[1];
 
     // objects.push_back(p2d_object{
     //     .type = P2D_OBJECT_RECTANGLE,
@@ -149,7 +159,7 @@ int main(int argc, char** argv) {
 
     int tile_size = 100;
 
-    if(!p2d_init(tile_size)) {
+    if(!p2d_init(tile_size, collision_callback, trigger_callback)) {
         printf("p2d_init failed\n");
         return 1;
     }
@@ -182,7 +192,15 @@ int main(int argc, char** argv) {
         }
 
         // printf("delta_time: %f\n", delta_time);
-        p2d_step(delta_time);
+        struct p2d_queue_event *current = p2d_step(delta_time);
+        while(current) {
+            printf("QUEUE EVENT:\n");
+            printf("object: %p\n", current->object);
+            printf("delta_x: %f\n", current->delta_x);
+            printf("delta_y: %f\n", current->delta_y);
+            printf("delta_rotation: %f\n", current->delta_rotation);
+            current = current->next;
+        }
 
         // draw lines to divide tiles by specified size
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

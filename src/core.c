@@ -20,11 +20,25 @@ struct p2d_state p2d_state = {0};
 // INIT
 //
 
-bool p2d_init(int cell_size) {
+bool p2d_init(
+    int cell_size,
+    void (*on_collision)(struct p2d_cb_data *data),
+    void (*on_trigger)(struct p2d_cb_data *data))
+{
     if(cell_size <= 0) {
         return false;
     }
     p2d_state._cell_size = cell_size;
+
+    if(!on_collision) {
+        p2d_logf(P2D_LOG_WARN, "p2d_init: on_collision is NULL.\n");
+    }
+    p2d_state.on_collision = on_collision;
+
+    if(!on_trigger) {
+        p2d_logf(P2D_LOG_WARN, "p2d_init: on_trigger is NULL.\n");
+    }
+    p2d_state.on_trigger = on_trigger;
 
     p2d_state.p2d_object_count = 0;
     p2d_state.p2d_world_node_count = 0;
@@ -177,9 +191,12 @@ void p2d_logf(int level, const char *fmt, ...) {
 }
 #endif
 
-void p2d_step(float delta_time) {
+struct p2d_queue_event * p2d_step(float delta_time) {
     
-    // TODO
+    // purge last queue, user should have consumed it by now
+    p2d_purge_queue();
+
+    // TODO SIMULATION
     
-    return;
+    return p2d_resolution_queue.head;
 }
