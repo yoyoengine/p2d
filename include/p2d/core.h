@@ -46,16 +46,22 @@
     particularly for visualization and debug overlays.
 */
 struct p2d_state {
+    // config
+    int _cell_size; // passed on init
+
+    // tracking / debug
     int p2d_object_count;
     int p2d_world_node_count;
 };
 extern struct p2d_state p2d_state;
 
+// TODO: split rects to OBB and AABB?
 enum p2d_object_type {
     P2D_OBJECT_RECTANGLE,
     P2D_OBJECT_CIRCLE
 };
 
+// TODO: allow frozen axes?
 struct p2d_object {
     // defining information
     enum p2d_object_type type;

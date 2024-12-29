@@ -4,8 +4,8 @@ A 2 dimensional rigidbody physics system written for yoyoengine
 
 ## Features
 
+- Broad phase collision detection, using a hashed spatial grid
 - OOB and Circle collision detection and resolution
-- builds a bsp tree and handles logic internally
 - exposes an iterator for synchronizing simulation to renderer
 
 ## thoughts
@@ -16,9 +16,10 @@ how can we do logging from p2d into yoyoengine?
 
 ## TODO:
 
-detect object spanning multiple cells and add it to all cells it spans
-
-- this involves making decisions on how the linear algebra will be structured for the lib
+- maybe add obb check against aabb for optimization? rn we convert aabb to obb
+- determine parameters and callbacks this lib will perform. how do we handle trigger colliders?
+- how is yoyoengine merging collider AND rigidbody together?? if at all.
+- actual collision resolution
 
 ## considerations
 

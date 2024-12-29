@@ -18,8 +18,11 @@ extern "C" {
 #endif
 
 #include "export.h"
+#include "types.h"
 #include "core.h"
 #include "world.h"
+#include "helpers.h"
+#include "detection.h"
 
 #ifdef __cplusplus
 }
