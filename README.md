@@ -77,3 +77,16 @@ in C, make sure we call a rigidbody_sync function to re-update the simulation wi
   - Should be simple because we are already "asynchronously" returning a queue of deltas.
   - The complicated part is the "realtime" callbacks during simulation.
     - Solution: these could be compiled into the queue for later execution.
+
+## TODO:
+
+Actually, i dont think i like the queue idea, like at all.
+
+- Wait until you finish the engine and then go back in to decide the sync. maybe its up to the engine to determine it based on its own delta tracking!
+  - honestly might be ideal, beacuse then there is no interop other than step, and its pretty easy to embed last_x,y,r into the ECS, and then update based on current p2d object 
+
+maybe fix seperation of world tracking, the insert into tile stuff being in core is really weird
+
+- honestly if we use the tracking array we dont need to index spatially, we can create the temp spatial every tick, we dont need to add until the exact start of broad phase
+
+refactor main.cpp stuff (yoinked obb thing)

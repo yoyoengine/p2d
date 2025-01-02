@@ -22,6 +22,12 @@ struct p2d_world_node {
 extern struct p2d_world_node *p2d_world[P2D_MAX_OBJECTS];
 
 /*
+    Also keep a reference to all objects in the world, that doesnt require accessing
+    spatially
+*/
+extern struct p2d_object * p2d_objects[P2D_MAX_OBJECTS];
+
+/*
     Converts an object's position to a hash bucket tile index
 */
 P2D_API int p2d_world_hash(int tile_x, int tile_y);

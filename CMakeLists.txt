@@ -12,6 +12,7 @@ add_library(p2d
     src/helpers.c
     src/types.c
     src/queue.c
+    src/resolution.c
 )
 
 target_include_directories(p2d PUBLIC

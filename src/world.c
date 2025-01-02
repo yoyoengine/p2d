@@ -11,6 +11,7 @@
 #include "p2d/world.h"
 
 // collection of world tiles
+struct p2d_object * p2d_objects[P2D_MAX_OBJECTS] = {NULL};
 struct p2d_world_node *p2d_world[P2D_MAX_OBJECTS] = {NULL};
 
 int p2d_world_hash(int tile_x, int tile_y) {
@@ -83,4 +84,20 @@ void p2d_world_remove_all() {
     }
     p2d_state.p2d_world_node_count = 0;
     p2d_state.p2d_object_count = 0;
+}
+
+/*
+    TODO: further optimize, static objs never move
+
+    see TODO in README.md, we can just not bother to create the world until ready
+*/
+void p2d_rebuild_world() {
+    p2d_world_remove_all();
+
+    for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+        struct p2d_object *object = p2d_objects[i];
+        if(object != NULL) {
+            p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
+        }
+    }
 }

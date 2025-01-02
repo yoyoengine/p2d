@@ -7,12 +7,15 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "p2d/core.h"
 #include "p2d/world.h"
 #include "p2d/types.h"
 #include "p2d/helpers.h"
 #include "p2d/detection.h"
+#include "p2d/resolution.h"
 
 struct p2d_state p2d_state = {0};
 
@@ -133,6 +136,14 @@ bool p2d_create_object(struct p2d_object *object) {
     // Detect all world tiles the object intersects with, and add it to each
     p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
 
+    // insert into track array
+    for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+        if(p2d_objects[i] == NULL) {
+            p2d_objects[i] = object;
+            break;
+        }
+    }
+
     p2d_state.p2d_object_count++;
     return true;
 }
@@ -145,6 +156,14 @@ bool p2d_remove_object(struct p2d_object *object) {
 
     // Detect all world tiles the object intersects with, and remove it from each
     p2d_for_each_intersecting_tile(object, _unregister_intersecting_tiles);
+
+    // remove from track array
+    for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+        if(p2d_objects[i] == object) {
+            p2d_objects[i] = NULL;
+            break;
+        }
+    }
 
     p2d_state.p2d_object_count--;
     return true;
@@ -196,7 +215,21 @@ struct p2d_queue_event * p2d_step(float delta_time) {
     // purge last queue, user should have consumed it by now
     p2d_purge_queue();
 
-    // TODO SIMULATION
-    
+    /*
+        Step each object in the world
+    */
+    for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+        struct p2d_object *object = p2d_objects[i];
+        if(object == NULL) {
+            continue;
+        }
+        p2d_object_step(object, delta_time);
+    }
+
+    /*
+        Reset and re-register world state for broad phase collision detection
+    */
+    p2d_rebuild_world();
+
     return p2d_resolution_queue.head;
 }

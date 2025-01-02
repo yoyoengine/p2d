@@ -96,6 +96,7 @@ struct p2d_object {
     // forces
     float vx;
     float vy;
+    float vr;
     
     // physical properties
     float rotation;
@@ -147,5 +148,14 @@ P2D_API bool p2d_remove_all_objects();
     Called externally to run one simulation step
 */
 P2D_API struct p2d_queue_event * p2d_step(float delta_time);
+
+/*
+    Helper-ish (poorly organized) functions
+*/
+void p2d_for_each_intersecting_tile(struct p2d_object *object, void (*callback)(struct p2d_object *object, int tile_hash));
+
+void _register_intersecting_tiles(struct p2d_object *object, int hash);
+
+void _unregister_intersecting_tiles(struct p2d_object *object, int hash);
 
 #endif // P2D_CORE_H

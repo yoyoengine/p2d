@@ -93,6 +93,35 @@ void draw_object(SDL_Renderer* renderer, p2d_object* object) {
     }
 }
 
+// yoiiiiiiink
+bool _object_intersects_tile(struct p2d_object *object, struct p2d_aabb tile) {
+    if (object->type == P2D_OBJECT_RECTANGLE) {
+        struct p2d_obb obb = p2d_get_obb(object);
+        
+        // TODO: replace when we can check AABB against OBB
+        struct p2d_obb tile_obb = {
+            .x = tile.x,
+            .y = tile.y,
+            .w = tile.w,
+            .h = tile.h,
+            .r = 0
+        };
+
+        return p2d_obb_intersects_obb(tile_obb, obb);
+    }
+    else { // P2D_OBJECT_CIRCLE
+        struct p2d_circle circle = {
+            .x = object->x,
+            .y = object->y,
+            .radius = object->circle.radius
+        };
+        return p2d_circle_intersects_aabb(circle, tile);
+    }
+}
+
+bool paused = false;
+bool single_setp = false;
+
 int main(int argc, char** argv) {
     if(!SDL_Init(SDL_INIT_VIDEO)) {
         printf("SDL_Init failed: %s\n", SDL_GetError());
@@ -103,8 +132,9 @@ int main(int argc, char** argv) {
         .is_static = false,
         .x = 300,
         .y = 200,
-        .vx = 0,
-        .vy = 0,
+        .vx = 10,
+        .vy = 10,
+        .vr = 10,
         .rotation = 45,
         .rectangle = {
             .width = 500,
@@ -119,7 +149,7 @@ int main(int argc, char** argv) {
         .x = 250,
         .y = 250,
         .vx = 0,
-        .vy = 0,
+        .vy = 200,
         .rotation = 0,
         .rectangle = {
             .width = 100,
@@ -172,13 +202,20 @@ int main(int argc, char** argv) {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_CreateWindowAndRenderer("p2d demo", 1920, 1080, 0, &window, &renderer);
-
+    SDL_SetRenderVSync(renderer, 1);
     int last_frame_time = SDL_GetTicks();
 
     while(1) {
         int time = SDL_GetTicks();
 
+        if(time - last_frame_time < 16) {
+            SDL_Delay(16 - (time - last_frame_time));
+        }
+
         float delta_time = (time - last_frame_time) / 1000.0f;
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
 
         SDL_Event event;
         while(SDL_PollEvent(&event)) {
@@ -189,17 +226,28 @@ int main(int argc, char** argv) {
                 p2d_shutdown();
                 return 0;
             }
+
+            // space - pause/unpause
+            if(event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_SPACE) {
+                paused = !paused;
+            }
+
+            // right arrow, single step
+            single_setp = event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_RIGHT;
         }
 
         // printf("delta_time: %f\n", delta_time);
-        struct p2d_queue_event *current = p2d_step(delta_time);
-        while(current) {
-            printf("QUEUE EVENT:\n");
-            printf("object: %p\n", current->object);
-            printf("delta_x: %f\n", current->delta_x);
-            printf("delta_y: %f\n", current->delta_y);
-            printf("delta_rotation: %f\n", current->delta_rotation);
-            current = current->next;
+        
+        if(!paused || single_setp) {
+            struct p2d_queue_event *current = p2d_step(delta_time);
+            while(current) {
+                printf("QUEUE EVENT:\n");
+                printf("object: %p\n", current->object);
+                printf("delta_x: %f\n", current->delta_x);
+                printf("delta_y: %f\n", current->delta_y);
+                printf("delta_rotation: %f\n", current->delta_rotation);
+                current = current->next;
+            }
         }
 
         // draw lines to divide tiles by specified size
@@ -209,6 +257,54 @@ int main(int argc, char** argv) {
         }
         for(int y = 0; y < 1080; y += tile_size) {
             SDL_RenderLine(renderer, 0, y, 1920, y);
+        }
+
+        // next, draw pink tile rects for non-empty tiles
+        // we have to recompute (ok for demo) because we cant reverse hash
+        for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+            if(p2d_objects[i] == NULL) {
+                continue;
+            }
+
+            struct p2d_object *object = p2d_objects[i];
+
+            struct p2d_aabb aabb = p2d_get_aabb(object);
+    
+            int start_tile_x = aabb.x / p2d_state._cell_size;
+            int start_tile_y = aabb.y / p2d_state._cell_size;
+            int end_tile_x = (aabb.x + aabb.w) / p2d_state._cell_size;
+            int end_tile_y = (aabb.y + aabb.h) / p2d_state._cell_size;
+
+            for (int tile_x = start_tile_x; tile_x <= end_tile_x; tile_x++) {
+                for (int tile_y = start_tile_y; tile_y <= end_tile_y; tile_y++) {
+                    struct p2d_aabb tile = {
+                        .x = tile_x * p2d_state._cell_size,
+                        .y = tile_y * p2d_state._cell_size,
+                        .w = p2d_state._cell_size,
+                        .h = p2d_state._cell_size
+                    };
+                    
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                    SDL_FRect fr = {
+                        .x = tile.x,
+                        .y = tile.y,
+                        .w = tile.w,
+                        .h = tile.h,
+                    };
+                    SDL_RenderRect(renderer, &fr);
+
+                    if(_object_intersects_tile(object, tile)) {
+                        SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
+                        SDL_FRect fr = {
+                            .x = tile.x,
+                            .y = tile.y,
+                            .w = tile.w,
+                            .h = tile.h,
+                        };
+                        SDL_RenderRect(renderer, &fr);
+                    }
+                }
+            }
         }
 
         // draw objects
@@ -221,13 +317,18 @@ int main(int argc, char** argv) {
         // // clear the terminal
         // printf("\033[2J\033[1;1H");
 
-        printf("+---------------------+\n");
-        printf("|        STATE        |\n");
-        printf("+---------------------+\n");
-        printf("objects: %d\n", p2d_state.p2d_object_count);
-        printf("world nodes: %d\n", p2d_state.p2d_world_node_count);
+        if(!paused || single_setp) {
+            printf("+---------------------+\n");
+            printf("|        STATE        |\n");
+            printf("+---------------------+\n");
+            printf("objects: %d\n", p2d_state.p2d_object_count);
+            printf("world nodes: %d\n", p2d_state.p2d_world_node_count);
+        }
 
         last_frame_time = time;
+        single_setp = false;
+
+        printf("delta_time: %f\n", delta_time);
     }
     p2d_shutdown();
     return 0;

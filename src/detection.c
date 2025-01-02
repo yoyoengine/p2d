@@ -11,7 +11,6 @@
 #include "p2d/detection.h"
 
 bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
-
     struct p2d_obb_verts rect1 = p2d_obb_to_verts(a);
     struct p2d_obb_verts rect2 = p2d_obb_to_verts(b);
 
@@ -21,7 +20,7 @@ bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
         for(int i1 = 0; i1 < 4; i1++) {
             int i2 = (i1 + 1) % 4;
 
-            float normalx = rect.verts[i2].y - rect.verts[i1].y;
+            float normalx = -(rect.verts[i2].y - rect.verts[i1].y);
             float normaly = rect.verts[i2].x - rect.verts[i1].x;
 
             float mina = FLT_MAX;
@@ -33,7 +32,7 @@ bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
             }
 
             float minb = FLT_MAX;
-            float maxb = -FLT_MIN;
+            float maxb = -FLT_MAX;
             for(int bi = 0; bi < 4; bi++) {
                 float projected = (normalx * rect2.verts[bi].x) + (normaly * rect2.verts[bi].y);
                 if(projected < minb) minb = projected;
