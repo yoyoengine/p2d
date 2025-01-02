@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -150,6 +150,20 @@ int main(int argc, char** argv) {
         .y = 250,
         .vx = 0,
         .vy = 200,
+        .rotation = 0,
+        .rectangle = {
+            .width = 100,
+            .height = 100,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 250,
+        .y = 600,
+        .vx = 0,
+        .vy = 0,
         .rotation = 0,
         .rectangle = {
             .width = 100,
@@ -323,12 +337,14 @@ int main(int argc, char** argv) {
             printf("+---------------------+\n");
             printf("objects: %d\n", p2d_state.p2d_object_count);
             printf("world nodes: %d\n", p2d_state.p2d_world_node_count);
+            printf("contact checks: %d\n", p2d_state.p2d_contact_checks);
+            printf("contacts found: %d\n", p2d_state.p2d_contacts_found);
+            printf("collision pairs: %d\n", p2d_state.p2d_collision_pairs);
         }
 
         last_frame_time = time;
         single_setp = false;
 
-        printf("delta_time: %f\n", delta_time);
     }
     p2d_shutdown();
     return 0;

@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -13,7 +13,9 @@
 #include "p2d/core.h"
 #include "p2d/world.h"
 #include "p2d/types.h"
+#include "p2d/pairs.h"
 #include "p2d/helpers.h"
+#include "p2d/contacts.h"
 #include "p2d/detection.h"
 #include "p2d/resolution.h"
 
@@ -46,8 +48,10 @@ bool p2d_init(
     p2d_state.p2d_object_count = 0;
     p2d_state.p2d_world_node_count = 0;
 
+    p2d_pairs_init();
+
     p2d_logf(P2D_LOG_INFO, "p2d initialized with cell size: %d.\n", cell_size);
-    
+
     return true;
 }
 
@@ -176,6 +180,7 @@ bool p2d_remove_all_objects() {
 
 bool p2d_shutdown() {
     p2d_remove_all_objects();
+    p2d_reset_collision_pairs();
     p2d_logf(P2D_LOG_INFO, "p2d shutdown.\n");
     return true;
 }
@@ -230,6 +235,61 @@ struct p2d_queue_event * p2d_step(float delta_time) {
         Reset and re-register world state for broad phase collision detection
     */
     p2d_rebuild_world();
+
+    // reset collision pairs
+    p2d_reset_collision_pairs();
+
+    /*
+        For each bucket containing objects, generate contacts
+        with all other objects in the bucket (excluding self)
+    */
+    p2d_state.p2d_contact_checks = 0;
+    p2d_state.p2d_contacts_found = 0;
+    for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
+        struct p2d_world_node *head_node = p2d_world[i];
+        if(head_node == NULL) {
+            continue;
+        }
+
+        struct p2d_world_node *node_a = head_node;
+
+        while(node_a) {
+            struct p2d_world_node *node_b = node_a->next;
+
+            while(node_b) {
+                p2d_state.p2d_contact_checks++;
+                if(node_a != node_b) {
+                    struct p2d_object *a = node_a->object;
+                    struct p2d_object *b = node_b->object;
+
+                    // if already collided, skip (multi grid node collision)
+                    if(p2d_collision_pair_exists(a, b)) {
+                        node_b = node_b->next;
+                        continue;
+                    }
+
+                    struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
+                    for(int i = 0; i < contacts->count; i++) {
+                        struct p2d_contact contact = contacts->contacts[i];
+
+                        // print the whole contact
+                        printf("contact: %d\n", i);
+                        printf("type: %d\n", contact.type);
+                        printf("contact_point: %f, %f\n", contact.contact_point.x, contact.contact_point.y);
+                        printf("contact_normal: %f, %f\n", contact.contact_normal.x, contact.contact_normal.y);
+                        printf("penetration: %f\n", contact.penetration);
+
+                        p2d_state.p2d_contacts_found++;
+                    }
+                }
+
+                node_b = node_b->next;
+            }
+
+            node_a = node_a->next;
+        }
+    }
+    // printf("checks: %d\n", checks);
 
     return p2d_resolution_queue.head;
 }

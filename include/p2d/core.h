@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -73,6 +73,9 @@ struct p2d_state {
     // tracking / debug
     int p2d_object_count;
     int p2d_world_node_count;
+    int p2d_contact_checks;
+    int p2d_contacts_found;
+    int p2d_collision_pairs;
 };
 extern struct p2d_state p2d_state;
 

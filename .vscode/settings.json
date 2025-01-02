@@ -3,6 +3,10 @@
         "*.h": "c",
         "*.yoyo": "json",
         "cstdlib": "c",
-        "vector": "cpp"
+        "vector": "cpp",
+        "random": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }

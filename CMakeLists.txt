@@ -13,6 +13,8 @@ add_library(p2d
     src/types.c
     src/queue.c
     src/resolution.c
+    src/contacts.c
+    src/pairs.c
 )
 
 target_include_directories(p2d PUBLIC

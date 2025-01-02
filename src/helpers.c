@@ -1,7 +1,7 @@
 
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -77,4 +77,12 @@ struct p2d_obb p2d_get_obb(struct p2d_object *object) {
             .r = 0
         };
     }
+}
+
+vec2_t p2d_struct_to_vec(struct p2d_vec2 vec) {
+    return (vec2_t){vec.x, vec.y};
+}
+
+struct p2d_vec2 p2d_vec_to_struct(vec2_t vec) {
+    return (struct p2d_vec2){vec.data[0], vec.data[1]};
 }

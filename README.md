@@ -90,3 +90,11 @@ maybe fix seperation of world tracking, the insert into tile stuff being in core
 - honestly if we use the tracking array we dont need to index spatially, we can create the temp spatial every tick, we dont need to add until the exact start of broad phase
 
 refactor main.cpp stuff (yoinked obb thing)
+
+add planes?
+
+chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) since both are mixed
+
+TODO: circle resolution?
+or OBB contacts
+- either way break them out into their own funcs/files which return contacts or add to the list
