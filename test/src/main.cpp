@@ -127,119 +127,119 @@ int main(int argc, char** argv) {
         printf("SDL_Init failed: %s\n", SDL_GetError());
     }
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_RECTANGLE,
-        .is_static = false,
-        .x = 300,
-        .y = 200,
-        // .vx = 10,
-        // .vy = 10,
-        // .vr = 10,
-        .rotation = 45,
-        .rectangle = {
-            .width = 500,
-            .height = 20,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_RECTANGLE,
+    //     .is_static = false,
+    //     .x = 300,
+    //     .y = 200,
+    //     // .vx = 10,
+    //     // .vy = 10,
+    //     // .vr = 10,
+    //     .rotation = 45,
+    //     .rectangle = {
+    //         .width = 500,
+    //         .height = 20,
+    //     },
+    // });
     // objects[0].user_data = &objects[0];
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 450,
-        .y = 250,
-        .vx = 0,
-        .vy = 200,
-        .rotation = 0,
-        .rectangle = {
-            .width = 100,
-            .height = 100,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 450,
+    //     .y = 250,
+    //     .vx = 0,
+    //     .vy = 200,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 300,
-        .y = 600,
-        .vx = 0,
-        .vy = 0,
-        .rotation = 0,
-        .rectangle = {
-            .width = 100,
-            .height = 100,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 300,
+    //     .y = 600,
+    //     .vx = 0,
+    //     .vy = 0,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 950,
-        .y = 100,
-        .vx = 0,
-        .vy = 50,
-        .rotation = 0,
-        .rectangle = {
-            .width = 100,
-            .height = 100,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 950,
+    //     .y = 100,
+    //     .vx = 0,
+    //     .vy = 50,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_RECTANGLE,
-        .is_static = false,
-        .x = 850,
-        .y = 300,
-        .vx = 0,
-        .vy = 0,
-        .rotation = 20,
-        .rectangle = {
-            .width = 250,
-            .height = 250,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_RECTANGLE,
+    //     .is_static = false,
+    //     .x = 850,
+    //     .y = 300,
+    //     .vx = 0,
+    //     .vy = 0,
+    //     .rotation = 20,
+    //     .rectangle = {
+    //         .width = 250,
+    //         .height = 250,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 950,
-        .y = 100,
-        .vx = 50,
-        .vy = 150,
-        .rotation = 0,
-        .rectangle = {
-            .width = 100,
-            .height = 100,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 950,
+    //     .y = 100,
+    //     .vx = 50,
+    //     .vy = 150,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 1100,
-        .y = 100,
-        .vx = 00,
-        .vy = 100,
-        .rotation = 0,
-        .rectangle = {
-            .width = 50,
-            .height = 50,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 1100,
+    //     .y = 100,
+    //     .vx = 00,
+    //     .vy = 100,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 50,
+    //         .height = 50,
+    //     },
+    // });
 
-    objects.push_back(p2d_object{
-        .type = P2D_OBJECT_CIRCLE,
-        .is_static = false,
-        .x = 1150,
-        .y = 100,
-        .vx = 00,
-        .vy = 100,
-        .rotation = 0,
-        .rectangle = {
-            .width = 50,
-            .height = 50,
-        },
-    });
+    // objects.push_back(p2d_object{
+    //     .type = P2D_OBJECT_CIRCLE,
+    //     .is_static = false,
+    //     .x = 1150,
+    //     .y = 100,
+    //     .vx = 00,
+    //     .vy = 100,
+    //     .rotation = 0,
+    //     .rectangle = {
+    //         .width = 50,
+    //         .height = 50,
+    //     },
+    // });
 
     // objects[1].user_data = &objects[1];
 
@@ -271,6 +271,66 @@ int main(int argc, char** argv) {
     //     .vy = 0,
     //     .rotation = 0,
     // });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 300,
+        .y = 200,
+        // .vx = 10,
+        .vy = 20,
+        // .vr = 10,
+        // .rotation = 45,
+        .rectangle = {
+            .width = 500,
+            .height = 20,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 1000,
+        .y = 300,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle = {
+            .width = 100,
+            .height = 100,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 975,
+        .y = 100,
+        // .vx = 10,
+        .vy = 20,
+        // .vr = 10,
+        .rotation = 45,
+        .rectangle = {
+            .width = 100,
+            .height = 100,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 250,
+        .y = 300,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle = {
+            .width = 400,
+            .height = 100,
+        },
+    });
 
     int tile_size = 100;
 

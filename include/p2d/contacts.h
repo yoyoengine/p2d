@@ -14,19 +14,7 @@
 #include "p2d/types.h"
 #include "p2d/core.h"
 
-// TODO: REMOVEME!
-enum p2d_contact_type {
-    P2D_CONTACT_NONE,
-    P2D_CONTACT_FACE_FACE, // circles only
-    P2D_CONTACT_FACE_EDGE, // rect edge into circle face
-    P2D_CONTACT_FACE_VERT, // rect vert into circle face
-    P2D_CONTACT_EDGE_VERT, // rect edge into rect vert
-    // in 2D, we will never have edge-edge contacts
-};
-
 struct p2d_contact {
-    enum p2d_contact_type type;
-
     struct p2d_vec2 contact_point;
     struct p2d_vec2 contact_normal;
 

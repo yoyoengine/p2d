@@ -16,4 +16,12 @@ P2D_API bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b);
 
 P2D_API bool p2d_circle_intersects_aabb(struct p2d_circle circle, struct p2d_aabb aabb);
 
+struct p2d_obb_obb_intersect_info {
+    bool colliding;
+    float penetration;
+    struct p2d_vec2 normal;
+};
+
+P2D_API struct p2d_obb_obb_intersect_info p2d_obb_intersects_obb_info(struct p2d_obb a, struct p2d_obb b);
+
 #endif // P2D_DETECTION_H

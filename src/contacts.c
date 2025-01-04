@@ -11,6 +11,7 @@
 #include "p2d/pairs.h"
 #include "p2d/helpers.h"
 #include "p2d/contacts.h"
+#include "p2d/detection.h"
 
 /*
     CONTACT LIST
@@ -45,8 +46,17 @@ void p2d_contact_list_clear(struct p2d_contact_list* list) {
     IMPL
 */
 
+/*
+    Maybe refactor in the future: but this function also checks for collisions BEFORE doing the
+    contact generation (two distinc phases)
+*/
 struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d_object *b) {
     struct p2d_contact_list* data = p2d_contact_list_create(1); // assume 1 contact initially
+
+    // early out: aabb check
+    if(!p2d_aabbs_intersect(p2d_get_aabb(a), p2d_get_aabb(b))) {
+        return data;
+    }
 
     /*
         Circle Circle
@@ -71,10 +81,25 @@ struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d
     /*
         Rect Rect
     */
-    // if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
-    //     p2d_generate_rect_rect_contacts(data, a, b);
-    //     return data;
-    // }
+    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
+        // first, SAT to get normal and penetration (also checks if colliding at all)
+        struct p2d_obb_obb_intersect_info info = p2d_obb_intersects_obb_info(p2d_get_obb(a), p2d_get_obb(b));
+        
+        // early out: nothing
+        if(!info.colliding) {
+            return data;
+        }
+
+        // then, get the contact points
+        p2d_generate_rect_rect_contacts(data, a, b);
+
+        // update contact point data
+        for(int i = 0; i < data->count; i++) {
+            data->contacts[i].contact_normal = info.normal;
+            data->contacts[i].penetration = info.penetration;
+        }
+        return data;
+    }
 
     return data;
 }
@@ -95,7 +120,6 @@ void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, str
 
     struct p2d_vec2 normal = { midline.x / mag, midline.y / mag };
 
-    contact.type = P2D_CONTACT_FACE_FACE;
     contact.contact_point = (struct p2d_vec2){ a->x + normal.x * a->circle.radius, a->y + normal.y * a->circle.radius };
 
     contact.contact_normal = normal;
@@ -155,4 +179,90 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
 
     p2d_contact_list_add(contacts, contact);
     p2d_add_collision_pair(rect, circle);
+}
+
+void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p2d_object *a, struct p2d_object *b) {
+    // in 2D, there are only 2 possible contacts between rectangles
+    struct p2d_contact contact1 = {0};
+    struct p2d_contact contact2 = {0};
+    int contact_count = 0;
+
+    struct p2d_obb obb_a = p2d_get_obb(a);
+    struct p2d_obb obb_b = p2d_get_obb(b);
+
+    struct p2d_obb_verts verts_a = p2d_obb_to_verts(obb_a);
+    struct p2d_obb_verts verts_b = p2d_obb_to_verts(obb_b);
+
+    float min_dist = FLT_MAX;
+
+    // for each vertex in a
+    for(int i = 0; i < 4; i++) {
+        struct p2d_vec2 vp = verts_a.verts[i];
+        
+        // get edges from b
+        for(int j = 0; j < 4; j++) {
+            struct p2d_vec2 va = verts_b.verts[j];
+            struct p2d_vec2 vb = verts_b.verts[(j + 1) % 4];
+        
+            struct p2d_vec2 closest_point = {0};
+            float dist = 0;
+            p2d_closest_point_on_segment_to_point(va, vb, vp, &closest_point, &dist);
+
+            if(p2d_nearly_equal(dist, min_dist)) {
+                if(!p2d_vec2_nearly_equal(closest_point, contact1.contact_point)
+                && !p2d_vec2_nearly_equal(closest_point, contact2.contact_point)) {
+                    contact_count = 2;
+                    contact2.contact_point = closest_point;
+                }
+            }
+            else if(dist < min_dist) {
+                min_dist = dist;
+                contact_count = 1;
+                contact1.contact_point = closest_point;
+            }
+        }
+    }
+
+    // for each vertex in b
+    for(int i = 0; i < 4; i++) {
+        struct p2d_vec2 vp = verts_b.verts[i];
+        
+        // get edges from a
+        for(int j = 0; j < 4; j++) {
+            struct p2d_vec2 va = verts_a.verts[j];
+            struct p2d_vec2 vb = verts_a.verts[(j + 1) % 4];
+        
+            struct p2d_vec2 closest_point = {0};
+            float dist = 0;
+            p2d_closest_point_on_segment_to_point(va, vb, vp, &closest_point, &dist);
+
+            if(p2d_nearly_equal(dist, min_dist)) {
+                if(!p2d_vec2_nearly_equal(closest_point, contact1.contact_point)
+                && !p2d_vec2_nearly_equal(closest_point, contact2.contact_point)) {
+                    contact_count = 2;
+                    contact2.contact_point = closest_point;
+                }
+            }
+            else if(dist < min_dist) {
+                min_dist = dist;
+                contact_count = 1;
+                contact1.contact_point = closest_point;
+            }
+        }
+    }
+
+    if(contact_count == 1) {
+        contact1.penetration = min_dist;
+        p2d_contact_list_add(contacts, contact1);
+    }
+    else if(contact_count == 2) {
+        contact1.penetration = min_dist;
+        contact2.penetration = min_dist;
+        p2d_contact_list_add(contacts, contact1);
+        p2d_contact_list_add(contacts, contact2);
+    }
+
+    if(contacts->count > 0) {
+        p2d_add_collision_pair(a, b);
+    }
 }

@@ -279,7 +279,6 @@ struct p2d_contact_list * p2d_step(float delta_time) {
 
                         // print the whole contact
                         printf("contact: %d\n", i);
-                        printf("type: %d\n", contact.type);
                         printf("contact_point: %f, %f\n", contact.contact_point.x, contact.contact_point.y);
                         printf("contact_normal: %f, %f\n", contact.contact_normal.x, contact.contact_normal.y);
                         printf("penetration: %f\n", contact.penetration);
