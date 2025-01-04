@@ -150,7 +150,7 @@ P2D_API bool p2d_remove_all_objects();
 /*
     Called externally to run one simulation step
 */
-P2D_API struct p2d_queue_event * p2d_step(float delta_time);
+P2D_API struct p2d_contact_list * p2d_step(float delta_time);
 
 /*
     Helper-ish (poorly organized) functions

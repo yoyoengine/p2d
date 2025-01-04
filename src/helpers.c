@@ -86,3 +86,38 @@ vec2_t p2d_struct_to_vec(struct p2d_vec2 vec) {
 struct p2d_vec2 p2d_vec_to_struct(vec2_t vec) {
     return (struct p2d_vec2){vec.data[0], vec.data[1]};
 }
+
+void p2d_closest_point_on_segment_to_point(struct p2d_vec2 sega, struct p2d_vec2 segb, struct p2d_vec2 point, struct p2d_vec2 *outPoint, float *outDist) {
+    struct p2d_vec2 ab = {segb.x - sega.x, segb.y - sega.y};
+    struct p2d_vec2 ap = {point.x - sega.x, point.y - sega.y};
+
+    float ab_dot_ap = ab.x * ap.x + ab.y * ap.y;
+    float ab_len_sq = ab.x * ab.x + ab.y * ab.y;
+    
+    float t = ab_dot_ap / ab_len_sq;
+    
+    struct p2d_vec2 closest;
+    if(t < 0) {
+        closest = sega;
+    }
+    else if(t > 1) {
+        closest = segb;
+    }
+    else {
+        closest = (struct p2d_vec2){
+            .x = sega.x + ab.x * t,
+            .y = sega.y + ab.y * t
+        };
+    }
+
+    if(outPoint) {
+        *outPoint = closest;
+    }
+
+    if(outDist) {
+        // Calculate actual distance to the closest point
+        float dx = point.x - closest.x;
+        float dy = point.y - closest.y;
+        *outDist = sqrtf(dx * dx + dy * dy);
+    }
+}

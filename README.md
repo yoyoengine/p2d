@@ -95,6 +95,8 @@ add planes?
 
 chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) since both are mixed
 
-TODO: circle resolution?
-or OBB contacts
-- either way break them out into their own funcs/files which return contacts or add to the list
+TODO:
+- refactor type calling for contact generation
+- rect-rect contacts (need two)
+- destroy contact type enum
+- resolution!

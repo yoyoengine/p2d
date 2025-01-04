@@ -21,13 +21,6 @@ struct p2d_obb {
     float r;
 };
 
-struct p2d_obb_verts {
-    struct {
-        float x;
-        float y;
-    } verts[4];
-};
-
 struct p2d_circle {
     float x;
     float y;
@@ -48,6 +41,10 @@ struct p2d_aabb {
     float y;
     float w;
     float h;
+};
+
+struct p2d_obb_verts {
+    struct p2d_vec2 verts[4];
 };
 
 P2D_API struct p2d_obb_verts p2d_obb_to_verts(struct p2d_obb obb);

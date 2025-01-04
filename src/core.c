@@ -215,7 +215,7 @@ void p2d_logf(int level, const char *fmt, ...) {
 }
 #endif
 
-struct p2d_queue_event * p2d_step(float delta_time) {
+struct p2d_contact_list * p2d_step(float delta_time) {
     
     // purge last queue, user should have consumed it by now
     p2d_purge_queue();
@@ -238,6 +238,8 @@ struct p2d_queue_event * p2d_step(float delta_time) {
 
     // reset collision pairs
     p2d_reset_collision_pairs();
+
+    struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
 
     /*
         For each bucket containing objects, generate contacts
@@ -272,6 +274,9 @@ struct p2d_queue_event * p2d_step(float delta_time) {
                     for(int i = 0; i < contacts->count; i++) {
                         struct p2d_contact contact = contacts->contacts[i];
 
+                        // debug
+                        p2d_contact_list_add(every_contact, contact);
+
                         // print the whole contact
                         printf("contact: %d\n", i);
                         printf("type: %d\n", contact.type);
@@ -291,5 +296,5 @@ struct p2d_queue_event * p2d_step(float delta_time) {
     }
     // printf("checks: %d\n", checks);
 
-    return p2d_resolution_queue.head;
+    return every_contact;
 }

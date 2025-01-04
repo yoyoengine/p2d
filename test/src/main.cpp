@@ -132,9 +132,9 @@ int main(int argc, char** argv) {
         .is_static = false,
         .x = 300,
         .y = 200,
-        .vx = 10,
-        .vy = 10,
-        .vr = 10,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = 10,
         .rotation = 45,
         .rectangle = {
             .width = 500,
@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     objects.push_back(p2d_object{
         .type = P2D_OBJECT_CIRCLE,
         .is_static = false,
-        .x = 250,
+        .x = 450,
         .y = 250,
         .vx = 0,
         .vy = 200,
@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
     objects.push_back(p2d_object{
         .type = P2D_OBJECT_CIRCLE,
         .is_static = false,
-        .x = 250,
+        .x = 300,
         .y = 600,
         .vx = 0,
         .vy = 0,
@@ -170,6 +170,77 @@ int main(int argc, char** argv) {
             .height = 100,
         },
     });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 950,
+        .y = 100,
+        .vx = 0,
+        .vy = 50,
+        .rotation = 0,
+        .rectangle = {
+            .width = 100,
+            .height = 100,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 850,
+        .y = 300,
+        .vx = 0,
+        .vy = 0,
+        .rotation = 20,
+        .rectangle = {
+            .width = 250,
+            .height = 250,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 950,
+        .y = 100,
+        .vx = 50,
+        .vy = 150,
+        .rotation = 0,
+        .rectangle = {
+            .width = 100,
+            .height = 100,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 1100,
+        .y = 100,
+        .vx = 00,
+        .vy = 100,
+        .rotation = 0,
+        .rectangle = {
+            .width = 50,
+            .height = 50,
+        },
+    });
+
+    objects.push_back(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 1150,
+        .y = 100,
+        .vx = 00,
+        .vy = 100,
+        .rotation = 0,
+        .rectangle = {
+            .width = 50,
+            .height = 50,
+        },
+    });
+
     // objects[1].user_data = &objects[1];
 
     // objects.push_back(p2d_object{
@@ -219,6 +290,8 @@ int main(int argc, char** argv) {
     SDL_SetRenderVSync(renderer, 1);
     int last_frame_time = SDL_GetTicks();
 
+    struct p2d_contact_list *last_contacts;
+
     while(1) {
         int time = SDL_GetTicks();
 
@@ -253,15 +326,28 @@ int main(int argc, char** argv) {
         // printf("delta_time: %f\n", delta_time);
         
         if(!paused || single_setp) {
-            struct p2d_queue_event *current = p2d_step(delta_time);
-            while(current) {
-                printf("QUEUE EVENT:\n");
-                printf("object: %p\n", current->object);
-                printf("delta_x: %f\n", current->delta_x);
-                printf("delta_y: %f\n", current->delta_y);
-                printf("delta_rotation: %f\n", current->delta_rotation);
-                current = current->next;
-            }
+            p2d_contact_list_clear(last_contacts);
+
+            last_contacts = p2d_step(delta_time);
+        }
+
+        // display the contact poitns on screen
+        for(int i = 0; i < last_contacts->count; i++) {
+            struct p2d_contact contact = last_contacts->contacts[i];
+            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+            
+
+            // larger rect to be more visible
+            SDL_FRect fr = {
+                .x = contact.contact_point.x - 5,
+                .y = contact.contact_point.y - 5,
+                .w = 10,
+                .h = 10,
+            };
+            SDL_RenderRect(renderer, &fr);
+
+            // draw the normal with proper magnitude given by penetration
+            SDL_RenderLine(renderer, contact.contact_point.x + contact.contact_normal.x * contact.penetration, contact.contact_point.y + contact.contact_normal.y * contact.penetration, contact.contact_point.x, contact.contact_point.y);
         }
 
         // draw lines to divide tiles by specified size
@@ -346,6 +432,7 @@ int main(int argc, char** argv) {
         single_setp = false;
 
     }
+    p2d_contact_list_destroy(last_contacts);
     p2d_shutdown();
     return 0;
 }

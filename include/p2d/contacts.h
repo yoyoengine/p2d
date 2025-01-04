@@ -14,9 +14,14 @@
 #include "p2d/types.h"
 #include "p2d/core.h"
 
+// TODO: REMOVEME!
 enum p2d_contact_type {
     P2D_CONTACT_NONE,
-    P2D_CONTACT_FACE_FACE,
+    P2D_CONTACT_FACE_FACE, // circles only
+    P2D_CONTACT_FACE_EDGE, // rect edge into circle face
+    P2D_CONTACT_FACE_VERT, // rect vert into circle face
+    P2D_CONTACT_EDGE_VERT, // rect edge into rect vert
+    // in 2D, we will never have edge-edge contacts
 };
 
 struct p2d_contact {
@@ -37,7 +42,7 @@ struct p2d_contact_list {
 P2D_API struct p2d_contact_list * p2d_contact_list_create(size_t initial_capacity);
 P2D_API void p2d_contact_list_destroy(struct p2d_contact_list* list);
 P2D_API void p2d_contact_list_add(struct p2d_contact_list* list, struct p2d_contact contact);
-
+P2D_API void p2d_contact_list_clear(struct p2d_contact_list* list);
 P2D_API struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d_object *b);
 
 #endif // P2D_CONTACTS_H
