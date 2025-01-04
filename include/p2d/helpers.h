@@ -36,6 +36,10 @@ P2D_API bool p2d_nearly_equal(float a, float b);
 
 P2D_API bool p2d_vec2_nearly_equal(struct p2d_vec2 a, struct p2d_vec2 b);
 
+// note, just rewrite LLA while youre at it...
+
+P2D_API struct p2d_vec2 p2d_vec2_normalize(struct p2d_vec2 vec);
+
 // P2D_API bool p2d_point_in_obb(struct p2d_vec2 point, struct p2d_obb obb);
 
 #endif // P2D_HELPERS_H

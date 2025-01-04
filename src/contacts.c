@@ -8,6 +8,7 @@
 #include <float.h>
 #include <stdlib.h>
 
+#include "p2d/core.h"
 #include "p2d/pairs.h"
 #include "p2d/helpers.h"
 #include "p2d/contacts.h"
@@ -19,6 +20,10 @@
 
 struct p2d_contact_list* p2d_contact_list_create(size_t initial_capacity) {
     struct p2d_contact_list* list = malloc(sizeof(struct p2d_contact_list));
+    if(!list) {
+        p2d_logf(P2D_LOG_WARN, "p2d_contact_list_create: failed to allocate memory.\n");
+        return NULL;
+    }
     list->contacts = malloc(sizeof(struct p2d_contact) * initial_capacity);
     list->count = 0;
     list->capacity = initial_capacity;
@@ -26,11 +31,19 @@ struct p2d_contact_list* p2d_contact_list_create(size_t initial_capacity) {
 }
 
 void p2d_contact_list_destroy(struct p2d_contact_list* list) {
+    if(!list) {
+        p2d_logf(P2D_LOG_WARN, "p2d_contact_list_destroy: list is NULL.\n");
+        return;
+    }
     free(list->contacts);
     free(list);
 }
 
 void p2d_contact_list_add(struct p2d_contact_list* list, struct p2d_contact contact) {
+    if(!list) {
+        p2d_logf(P2D_LOG_WARN, "p2d_contact_list_add: list is NULL.\n");
+        return;
+    }
     if (list->count >= list->capacity) {
         list->capacity *= 2;
         list->contacts = realloc(list->contacts, sizeof(struct p2d_contact) * list->capacity);
@@ -39,6 +52,10 @@ void p2d_contact_list_add(struct p2d_contact_list* list, struct p2d_contact cont
 }
 
 void p2d_contact_list_clear(struct p2d_contact_list* list) {
+    if(!list) {
+        p2d_logf(P2D_LOG_WARN, "p2d_contact_list_clear: list is NULL.\n");
+        return;
+    }
     list->count = 0;
 }
 
@@ -82,22 +99,7 @@ struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d
         Rect Rect
     */
     if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
-        // first, SAT to get normal and penetration (also checks if colliding at all)
-        struct p2d_obb_obb_intersect_info info = p2d_obb_intersects_obb_info(p2d_get_obb(a), p2d_get_obb(b));
-        
-        // early out: nothing
-        if(!info.colliding) {
-            return data;
-        }
-
-        // then, get the contact points
         p2d_generate_rect_rect_contacts(data, a, b);
-
-        // update contact point data
-        for(int i = 0; i < data->count; i++) {
-            data->contacts[i].contact_normal = info.normal;
-            data->contacts[i].penetration = info.penetration;
-        }
         return data;
     }
 
@@ -126,7 +128,6 @@ void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, str
     contact.penetration = a->circle.radius + b->circle.radius - mag;
 
     p2d_contact_list_add(contacts, contact);
-    p2d_add_collision_pair(a, b);
 }
 
 /*
@@ -178,7 +179,6 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
     if(contact.penetration < 0) { return; }
 
     p2d_contact_list_add(contacts, contact);
-    p2d_add_collision_pair(rect, circle);
 }
 
 void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p2d_object *a, struct p2d_object *b) {
@@ -260,9 +260,5 @@ void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p
         contact2.penetration = min_dist;
         p2d_contact_list_add(contacts, contact1);
         p2d_contact_list_add(contacts, contact2);
-    }
-
-    if(contacts->count > 0) {
-        p2d_add_collision_pair(a, b);
     }
 }

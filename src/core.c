@@ -14,6 +14,7 @@
 #include "p2d/world.h"
 #include "p2d/types.h"
 #include "p2d/pairs.h"
+#include "p2d/collide.h"
 #include "p2d/helpers.h"
 #include "p2d/contacts.h"
 #include "p2d/detection.h"
@@ -138,7 +139,8 @@ bool p2d_create_object(struct p2d_object *object) {
     }
 
     // Detect all world tiles the object intersects with, and add it to each
-    p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
+    // p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
+    // ^^^ NO! this happens implicitely each frame
 
     // insert into track array
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
@@ -159,7 +161,8 @@ bool p2d_remove_object(struct p2d_object *object) {
     }
 
     // Detect all world tiles the object intersects with, and remove it from each
-    p2d_for_each_intersecting_tile(object, _unregister_intersecting_tiles);
+    // p2d_for_each_intersecting_tile(object, _unregister_intersecting_tiles);
+    // ^^^ NO! this happens implicitely each frame
 
     // remove from track array
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
@@ -214,6 +217,44 @@ void p2d_logf(int level, const char *fmt, ...) {
     va_end(args);
 }
 #endif
+
+/*
+    In 2D, we can only have two possible contacts.
+
+    This struct is really just for ease of use (and avoiding traversing a list
+    in the resolution for contacts)
+*/
+struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 normal, float penetration, struct p2d_contact_list *contacts) {
+    struct p2d_collision_manifold manifold = {0};
+    manifold.a = a;
+    manifold.b = b;
+
+    manifold.normal = normal;
+    manifold.penetration = penetration;
+
+    manifold.contact_points[0] = contacts->contacts[0].contact_point;
+    manifold.contact_points[1] = contacts->contacts[1].contact_point;
+    manifold.contact_count = contacts->count;
+
+    return manifold;
+}
+
+void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 mtv) {
+    if(a->is_static) {
+        b->x += mtv.x;
+        b->y += mtv.y;
+    }
+    else if(b->is_static) {
+        a->x -= mtv.x;
+        a->y -= mtv.y;
+    }
+    else {
+        a->x -= mtv.x / 2.0f;
+        a->y -= mtv.y / 2.0f;
+        b->x += mtv.x / 2.0f;
+        b->y += mtv.y / 2.0f;
+    }
+}
 
 struct p2d_contact_list * p2d_step(float delta_time) {
     
@@ -270,20 +311,43 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                         continue;
                     }
 
-                    struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
-                    for(int i = 0; i < contacts->count; i++) {
-                        struct p2d_contact contact = contacts->contacts[i];
+                    struct p2d_collision_info d = {0};
+                    if(p2d_collide(a, b, &d)) {
+                        
+                        p2d_add_collision_pair(a, b);
 
-                        // debug
-                        p2d_contact_list_add(every_contact, contact);
+                        // get all contacts
+                        struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
 
-                        // print the whole contact
-                        printf("contact: %d\n", i);
-                        printf("contact_point: %f, %f\n", contact.contact_point.x, contact.contact_point.y);
-                        printf("contact_normal: %f, %f\n", contact.contact_normal.x, contact.contact_normal.y);
-                        printf("penetration: %f\n", contact.penetration);
+                        struct p2d_vec2 mtv = {
+                            .x = d.normal.x * d.depth,
+                            .y = d.normal.y * d.depth
+                        };
+                        p2d_separate_bodies(a, b, mtv);
 
-                        p2d_state.p2d_contacts_found++;
+                        // BUG: contacts is zero because we moved too far??
+
+                        // early out
+                        if(!contacts || contacts->count <= 0) {
+                            node_b = node_b->next;
+                            continue;
+                        }
+                        p2d_state.p2d_contacts_found += contacts->count;
+
+                        // debug: add all contacts to the global list
+                        for(int i = 0; i < contacts->count; i++) {
+                            p2d_contact_list_add(every_contact, contacts->contacts[i]);
+                        }
+
+                        // create contact manifold for resolution
+                        struct p2d_collision_manifold manifold =
+                            p2d_generate_manifold(a, b, d.normal, d.depth, contacts);
+
+                        // now, resolve their collision
+                        p2d_resolve_collision(&manifold);
+
+                        // cleanup
+                        p2d_contact_list_destroy(contacts);
                     }
                 }
 
@@ -293,7 +357,6 @@ struct p2d_contact_list * p2d_step(float delta_time) {
             node_a = node_a->next;
         }
     }
-    // printf("checks: %d\n", checks);
 
     return every_contact;
 }

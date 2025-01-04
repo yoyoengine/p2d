@@ -15,6 +15,7 @@ add_library(p2d
     src/resolution.c
     src/contacts.c
     src/pairs.c
+    src/collide.c
 )
 
 target_include_directories(p2d PUBLIC

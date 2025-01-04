@@ -154,3 +154,8 @@ bool p2d_vec2_nearly_equal(struct p2d_vec2 a, struct p2d_vec2 b) {
 bool p2d_aabbs_intersect(struct p2d_aabb a, struct p2d_aabb b) {
     return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
+
+struct p2d_vec2 p2d_vec2_normalize(struct p2d_vec2 vec) {
+    float mag = sqrtf(vec.x * vec.x + vec.y * vec.y);
+    return (struct p2d_vec2){vec.x / mag, vec.y / mag};
+}

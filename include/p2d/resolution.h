@@ -16,4 +16,6 @@
 
 P2D_API void p2d_object_step(struct p2d_object *object, float delta_time);
 
+P2D_API void p2d_resolve_collision(struct p2d_collision_manifold *manifold);
+
 #endif // P2D_RESOLUTION_H

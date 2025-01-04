@@ -96,7 +96,7 @@ add planes?
 chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) since both are mixed
 
 TODO:
-- refactor type calling for contact generation
-- rect-rect contacts (need two)
-- destroy contact type enum
-- resolution!
+- rect-circle collision check (or the contact generation) is bugged out
+- triple check you can do what you did (change the move apart til after contact check(he might be doing weird cs stuff, it kinda seemed like flat deferred movement to the next frame as well))
+- continue the grind with the rotation and torque stuff
+- collision and trigger callbacks!

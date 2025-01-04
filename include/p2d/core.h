@@ -10,6 +10,7 @@
 
 #include "p2d/export.h"
 #include "p2d/queue.h"
+#include "p2d/types.h"
 
 #include <stdbool.h>
 #include <stdarg.h>
@@ -66,6 +67,9 @@ struct p2d_state {
     // passed on init
     int _cell_size;
 
+    // init
+    struct p2d_vec2 gravity;
+
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);
     void (*on_trigger)(struct p2d_cb_data *data);
@@ -101,7 +105,7 @@ struct p2d_object {
     float vy;
     float vr;
     
-    // physical properties
+    // shape properties
     float rotation;
     union {
         struct {
@@ -114,11 +118,25 @@ struct p2d_object {
         } circle;
     };
 
+    // physical properties
+    float mass;
+    float restitution;
+
     /*
         User data, useful for things like identifying this object in an
         engine's ECS to operate on its impulses when collisions occur.
     */
     void *user_data;
+};
+
+struct p2d_collision_manifold {
+    struct p2d_object *a;
+    struct p2d_object *b;
+    struct p2d_vec2 normal;
+    float penetration;
+
+    struct p2d_vec2 contact_points[2];
+    int contact_count;
 };
 
 /*
