@@ -132,7 +132,7 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .mass = 1,
+        .mass = .0001,
         .restitution = 0.5,
     });
     objects.push_back(obj);

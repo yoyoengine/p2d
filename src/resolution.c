@@ -16,6 +16,8 @@ void p2d_object_step(struct p2d_object *object, float delta_time) {
     }
 
     if(object->is_static) {
+        object->vx = 0;
+        object->vy = 0;
         return;
     }
 
@@ -59,6 +61,12 @@ void _p2d_basic_resolution(struct p2d_collision_manifold *manifold) {
 
     b->vx += (j * manifold->normal.x) * (1.0f/b->mass);
     b->vy += (j * manifold->normal.y) * (1.0f/b->mass);
+
+    // a->vx -= j / a->mass * manifold->normal.x;
+    // a->vy -= j / a->mass * manifold->normal.y;
+
+    // b->vx += j / b->mass * manifold->normal.x;
+    // b->vy += j / b->mass * manifold->normal.y;
 }
 
 void p2d_resolve_collision(struct p2d_collision_manifold *manifold) {

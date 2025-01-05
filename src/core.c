@@ -240,19 +240,21 @@ struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct
 }
 
 void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 normal, float depth) {
+    struct p2d_vec2 mtv = {normal.x * depth, normal.y * depth};
+
     if(a->is_static) {
-        b->x += normal.x * depth;
-        b->y += -normal.y * depth;
+        b->x += mtv.x;
+        b->y += mtv.y;
     }
     else if(b->is_static) {
-        a->x += -normal.x * depth;
-        a->y += normal.y * depth;
+        a->x += -mtv.x;
+        a->y += -mtv.y;
     }
     else {
-        a->x += ((-normal.x * depth) / 2.0f);
-        a->y += ((normal.y * depth) / 2.0f);
-        b->x += ((normal.x * depth) / 2.0f);
-        b->y += ((-normal.y * depth) / 2.0f);
+        a->x += (-mtv.x / 2.0f);
+        a->y += (-mtv.y / 2.0f);
+        b->x += (mtv.x / 2.0f);
+        b->y += (mtv.x / 2.0f);
     }
 }
 
@@ -318,17 +320,13 @@ struct p2d_contact_list * p2d_step(float delta_time) {
 
                     struct p2d_collision_info d = {0};
                     if(p2d_collide(a, b, &d)) {
-                        
                         p2d_add_collision_pair(a, b);
-
-                        printf("Types: %d %d\n", a->type, b->type);
-                        printf("velocities: a: %f %f, b: %f %f\n", a->vx, a->vy, b->vx, b->vy);
-                        p2d_separate_bodies(a, b, d.normal, d.depth);
 
                         // get all contacts
                         struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
 
-                        // BUG: contacts is zero because we moved too far??
+                        // seperate after contacts - i think 2bit had some weird deferred movement
+                        p2d_separate_bodies(a, b, d.normal, d.depth);
 
                         // early out
                         if(!contacts || contacts->count <= 0) {

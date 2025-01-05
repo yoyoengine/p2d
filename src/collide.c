@@ -113,60 +113,63 @@ bool p2d_collide_rect_rect(struct p2d_object *a, struct p2d_object *b, struct p2
     }
     info->depth = FLT_MAX; info->normal = (struct p2d_vec2){0, 0};
 
-    struct p2d_obb a_obb = p2d_get_obb(a);
-    struct p2d_obb b_obb = p2d_get_obb(b);
+    float min_a, max_a, min_b, max_b;
+    struct p2d_obb_verts a_verts = p2d_obb_to_verts(p2d_get_obb(a));
+    struct p2d_obb_verts b_verts = p2d_obb_to_verts(p2d_get_obb(b));
 
-    struct p2d_obb_verts rect1 = p2d_obb_to_verts(a_obb);
-    struct p2d_obb_verts rect2 = p2d_obb_to_verts(b_obb);
+    for(int i = 0; i < 4; i++) {
+        struct p2d_vec2 va = a_verts.verts[i];
+        struct p2d_vec2 vb = a_verts.verts[(i + 1) % 4];
 
-    for(int polyi = 0; polyi < 2; polyi++) {
-        struct p2d_obb_verts rect = polyi == 0 ? rect1 : rect2;
+        struct p2d_vec2 edge = {vb.x - va.x, vb.y - va.y};
+        struct p2d_vec2 axis = {-edge.y, edge.x}; 
+        axis = p2d_vec2_normalize(axis);
 
-        for(int i1 = 0; i1 < 4; i1++) {
-            int i2 = (i1 + 1) % 4;
+        p2d_project_obb_to_axis(a_verts, axis, &min_a, &max_a);
+        p2d_project_obb_to_axis(b_verts, axis, &min_b, &max_b);
 
-            float normalx = -(rect.verts[i2].y - rect.verts[i1].y);
-            float normaly = rect.verts[i2].x - rect.verts[i1].x;
-            
-            // Normalize the normal
-            float len = sqrtf(normalx * normalx + normaly * normaly);
-            normalx /= len;
-            normaly /= len;
-
-            float mina = FLT_MAX, maxa = -FLT_MAX;
-            float minb = FLT_MAX, maxb = -FLT_MAX;
-
-            // Project both shapes onto the normal
-            for(int ai = 0; ai < 4; ai++) {
-                float projected = (normalx * rect1.verts[ai].x) + (normaly * rect1.verts[ai].y);
-                mina = fminf(mina, projected);
-                maxa = fmaxf(maxa, projected);
-            }
-
-            for(int bi = 0; bi < 4; bi++) {
-                float projected = (normalx * rect2.verts[bi].x) + (normaly * rect2.verts[bi].y);
-                minb = fminf(minb, projected);
-                maxb = fmaxf(maxb, projected);
-            }
-
-            if(maxa < minb || maxb < mina) {
-                return false;
-            }
-
-            // Calculate penetration
-            float overlap = fminf(maxa - minb, maxb - mina);
-            
-            if(overlap < info->depth) {
-                info->depth = overlap;
-                info->normal = (struct p2d_vec2){normalx, normaly};
-                
-                // Ensure normal points from A to B
-                if((minb - mina) < 0) {
-                    info->normal.x = -normalx;
-                    info->normal.y = -normaly;
-                }
-            }
+        if(min_a >= max_b || max_a <= min_b) {
+            return false;
         }
+
+        float axis_depth = fminf(max_a - min_b, max_b - min_a);
+
+        if(axis_depth < info->depth) {
+            info->depth = axis_depth;
+            info->normal = axis;
+        }
+    }
+
+    for(int i = 0; i < 4; i++) {
+        struct p2d_vec2 va = b_verts.verts[i];
+        struct p2d_vec2 vb = b_verts.verts[(i + 1) % 4];
+
+        struct p2d_vec2 edge = {vb.x - va.x, vb.y - va.y};
+        struct p2d_vec2 axis = {-edge.y, edge.x}; 
+        axis = p2d_vec2_normalize(axis);
+
+        p2d_project_obb_to_axis(a_verts, axis, &min_a, &max_a);
+        p2d_project_obb_to_axis(b_verts, axis, &min_b, &max_b);
+
+        if(min_a >= max_b || max_a <= min_b) {
+            return false;
+        }
+
+        float axis_depth = fminf(max_a - min_b, max_b - min_a);
+
+        if(axis_depth < info->depth) {
+            info->depth = axis_depth;
+            info->normal = axis;
+        }
+    }
+
+    struct p2d_vec2 a_center = p2d_object_center(a);
+    struct p2d_vec2 b_center = p2d_object_center(b);
+
+    struct p2d_vec2 direction = {b_center.x - a_center.x, b_center.y - a_center.y};
+
+    if(lla_vec2_dot(p2d_struct_to_vec(direction), p2d_struct_to_vec(info->normal)) < 0.0f) {
+        info->normal = (struct p2d_vec2){-info->normal.x, -info->normal.y};
     }
 
     return true;
