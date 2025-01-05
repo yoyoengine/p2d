@@ -239,20 +239,20 @@ struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct
     return manifold;
 }
 
-void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 mtv) {
+void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 normal, float depth) {
     if(a->is_static) {
-        b->x += mtv.x;
-        b->y += mtv.y;
+        b->x += normal.x * depth;
+        b->y += -normal.y * depth;
     }
     else if(b->is_static) {
-        a->x -= mtv.x;
-        a->y -= mtv.y;
+        a->x += -normal.x * depth;
+        a->y += normal.y * depth;
     }
     else {
-        a->x -= mtv.x / 2.0f;
-        a->y -= mtv.y / 2.0f;
-        b->x += mtv.x / 2.0f;
-        b->y += mtv.y / 2.0f;
+        a->x += ((-normal.x * depth) / 2.0f);
+        a->y += ((normal.y * depth) / 2.0f);
+        b->x += ((normal.x * depth) / 2.0f);
+        b->y += ((-normal.y * depth) / 2.0f);
     }
 }
 
@@ -305,6 +305,11 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                     struct p2d_object *a = node_a->object;
                     struct p2d_object *b = node_b->object;
 
+                    if(a->is_static && b->is_static) {
+                        node_b = node_b->next;
+                        continue;
+                    }
+
                     // if already collided, skip (multi grid node collision)
                     if(p2d_collision_pair_exists(a, b)) {
                         node_b = node_b->next;
@@ -316,14 +321,12 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                         
                         p2d_add_collision_pair(a, b);
 
+                        printf("Types: %d %d\n", a->type, b->type);
+                        printf("velocities: a: %f %f, b: %f %f\n", a->vx, a->vy, b->vx, b->vy);
+                        p2d_separate_bodies(a, b, d.normal, d.depth);
+
                         // get all contacts
                         struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
-
-                        struct p2d_vec2 mtv = {
-                            .x = d.normal.x * d.depth,
-                            .y = d.normal.y * d.depth
-                        };
-                        p2d_separate_bodies(a, b, mtv);
 
                         // BUG: contacts is zero because we moved too far??
 

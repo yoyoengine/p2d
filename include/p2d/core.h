@@ -104,6 +104,9 @@ struct p2d_object {
     float vx;
     float vy;
     float vr;
+    // float force_x;
+    // float force_y;
+    // float rotation_force;
     
     // shape properties
     float rotation;

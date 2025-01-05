@@ -42,4 +42,11 @@ P2D_API struct p2d_vec2 p2d_vec2_normalize(struct p2d_vec2 vec);
 
 // P2D_API bool p2d_point_in_obb(struct p2d_vec2 point, struct p2d_obb obb);
 
+P2D_API void p2d_project_obb_to_axis(struct p2d_obb_verts verts, struct p2d_vec2 axis, float *min, float *max);
+
+P2D_API void p2d_project_circle_to_axis(struct p2d_vec2 center, float radius, struct p2d_vec2 axis, float *min, float *max);
+
+// returns obb verts index of closest vert
+P2D_API int p2d_closest_circle_point_on_rect(struct p2d_vec2 circle_center, struct p2d_obb_verts verts);
+
 #endif // P2D_HELPERS_H

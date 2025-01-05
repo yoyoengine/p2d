@@ -38,64 +38,70 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
         p2d_logf(P2D_LOG_ERROR, "p2d_collide_rect_circle: invalid arguments.\n");
         return false;
     }
-    info->depth = 0; info->normal = (struct p2d_vec2){0, 0};
+    info->depth = FLT_MAX; info->normal = (struct p2d_vec2){0, 0};
 
-    // might not be needed
-    // https://github.com/twobitcoder101/FlatPhysics/blob/main/Collisions.cs#L355
+    struct p2d_vec2 axis = {0, 0};
+    float axis_depth = 0;
+    float min_a, max_a, min_b, max_b;
 
-    // struct p2d_vec2 axis = {0, 0};
-    // float axis_depth = 0;
-    // float min_a, max_a, min_b, max_b;
+    struct p2d_obb rect_obb = p2d_get_obb(rect);
+    struct p2d_obb_verts rect_verts = p2d_obb_to_verts(rect_obb);
 
-    // struct p2d_obb rect_obb = p2d_get_obb(rect);
-    // struct p2d_obb_verts rect_verts = p2d_obb_to_verts(rect_obb);
-
-    // for(int i = 0; i < 4; i++) {
-    //     struct p2d_vec2 va = rect_verts.verts[i];
-    //     struct p2d_vec2 vb = rect_verts.verts[(i + 1) % 4];
-
-    //     struct p2d_vec2 edge = {vb.x - va.x, vb.y - va.y};
-    //     axis = (struct p2d_vec2){-edge.y, edge.x};
-    //     axis = p2d_vec2_normalize(axis);
-    // }
-
-    struct p2d_obb_verts verts = p2d_obb_to_verts(p2d_get_obb(rect));
-
-    float min_dist = FLT_MAX;
-    struct p2d_vec2 min_closest_point = {0};
-    struct p2d_vec2 va = verts.verts[0];
     for(int i = 0; i < 4; i++) {
-        struct p2d_vec2 vb = verts.verts[(i + 1) % 4];
+        struct p2d_vec2 va = rect_verts.verts[i];
+        struct p2d_vec2 vb = rect_verts.verts[(i + 1) % 4];
 
-        struct p2d_vec2 closest_point = {0};
-        float dist = 0;
-        p2d_closest_point_on_segment_to_point(va, vb, (struct p2d_vec2){circle->x, circle->y}, &closest_point, &dist);
+        struct p2d_vec2 edge = {vb.x - va.x, vb.y - va.y};
+        axis = (struct p2d_vec2){-edge.y, edge.x};
+        axis = p2d_vec2_normalize(axis);
 
-        if(dist < min_dist) {
-            min_dist = dist;
-            min_closest_point = closest_point;
+        p2d_project_obb_to_axis(rect_verts, axis, &min_a, &max_a);
+
+        struct p2d_vec2 circ_center = {circle->x, circle->y};
+        p2d_project_circle_to_axis(circ_center, circle->circle.radius, axis, &min_b, &max_b);
+
+        if(min_a >= max_b || max_a <= min_b) {
+            return false;
         }
 
-        va = vb;
+        axis_depth = fminf(max_a - min_b, max_b - min_a);
+
+        if(axis_depth < info->depth) {
+            info->depth = axis_depth;
+            info->normal = axis;
+        }
     }
 
-    // early out
-    if(min_dist > circle->circle.radius) {
+    int cp_index = p2d_closest_circle_point_on_rect((struct p2d_vec2){circle->x, circle->y}, rect_verts);
+    struct p2d_vec2 cp = rect_verts.verts[cp_index];
+
+    axis = (struct p2d_vec2){cp.x - circle->x, cp.y - circle->y};
+    axis = p2d_vec2_normalize(axis);
+
+    p2d_project_obb_to_axis(rect_verts, axis, &min_a, &max_a);
+    p2d_project_circle_to_axis((struct p2d_vec2){circle->x, circle->y}, circle->circle.radius, axis, &min_b, &max_b);
+
+    if(min_a >= max_b || max_a <= min_b) {
         return false;
     }
 
-    info->depth = circle->circle.radius - min_dist;
+    axis_depth = fminf(max_a - min_b, max_b - min_a);
 
-    struct p2d_vec2 delta = {circle->x - min_closest_point.x, circle->y - min_closest_point.y};
-    float dist = lla_vec2_magnitude(p2d_struct_to_vec(delta));
-    if(dist > 0) {
-        info->normal = (struct p2d_vec2){delta.x / dist, delta.y / dist};
-    }
-    else {
-        info->normal = (struct p2d_vec2){1, 0};
+    if(axis_depth < info->depth) {
+        info->depth = axis_depth;
+        info->normal = axis;
     }
 
-    if(info->depth < 0) { return false; }
+    struct p2d_vec2 rect_center = p2d_object_center(rect);
+
+    struct p2d_vec2 direction = {rect_center.x - circle->x, rect_center.y - circle->y};
+
+    if(lla_vec2_dot(p2d_struct_to_vec(direction), p2d_struct_to_vec(info->normal)) < 0.0f) {
+        info->normal = (struct p2d_vec2){-info->normal.x, -info->normal.y};
+    }
+
+    printf("Normal: %f %f\n", info->normal.x, info->normal.y);
+    printf("Depth: %f\n", info->depth);
 
     return true;
 }
@@ -178,29 +184,36 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
     }
     info->depth = 0; info->normal = (struct p2d_vec2){0, 0};
 
+    bool result, swapped = false;
+
     /*
         Circle Circle
     */
     if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_CIRCLE) {
-        return p2d_collide_circle_circle(a, b, info);
+        result = p2d_collide_circle_circle(a, b, info);
     }
 
     /*
         Rect Circle
     */
-    if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_RECTANGLE) {
-        return p2d_collide_rect_circle(b, a, info);
+    else if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_RECTANGLE) {
+        result = p2d_collide_rect_circle(b, a, info);
+        swapped = true;
     }
-    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_CIRCLE) {
-        return p2d_collide_rect_circle(a, b, info);
+    else if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_CIRCLE) {
+        result = p2d_collide_rect_circle(a, b, info);
     }
 
     /*
         Rect Rect
     */
-    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
-        return p2d_collide_rect_rect(a, b, info);
+    else if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
+        result = p2d_collide_rect_rect(a, b, info);
     }
 
-    return false;
+    if(result && swapped) {
+        info->normal = (struct p2d_vec2){-info->normal.x, -info->normal.y};
+    }
+
+    return result;
 }

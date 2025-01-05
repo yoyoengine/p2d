@@ -6,6 +6,8 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include <float.h>
+
 #include "p2d/core.h"
 #include "p2d/helpers.h"
 #include "p2d/types.h"
@@ -158,4 +160,51 @@ bool p2d_aabbs_intersect(struct p2d_aabb a, struct p2d_aabb b) {
 struct p2d_vec2 p2d_vec2_normalize(struct p2d_vec2 vec) {
     float mag = sqrtf(vec.x * vec.x + vec.y * vec.y);
     return (struct p2d_vec2){vec.x / mag, vec.y / mag};
+}
+
+void p2d_project_obb_to_axis(struct p2d_obb_verts verts, struct p2d_vec2 axis, float *min, float *max) {
+    *min = FLT_MAX;
+    *max = FLT_MIN;
+
+    for(int i = 0; i < 4; i++) {
+        vec2_t v = {.data={verts.verts[i].x, verts.verts[i].y}};
+        float proj = lla_vec2_dot(v, p2d_struct_to_vec(axis));
+
+        if(proj < *min) { *min = proj; }
+        if(proj > *max) { *max = proj; }
+    }
+}
+
+void p2d_project_circle_to_axis(struct p2d_vec2 center, float radius, struct p2d_vec2 axis, float *min, float *max) {
+    struct p2d_vec2 direction = p2d_vec2_normalize(axis);
+    vec2_t direction_and_radius = lla_vec2_scale(p2d_struct_to_vec(direction), radius);
+
+    vec2_t p1 = lla_vec2_add(p2d_struct_to_vec(center), direction_and_radius);
+    vec2_t p2 = lla_vec2_sub(p2d_struct_to_vec(center), direction_and_radius);
+
+    *min = lla_vec2_dot(p1, p2d_struct_to_vec(axis));
+    *max = lla_vec2_dot(p2, p2d_struct_to_vec(axis));
+
+    if(*min > *max) {
+        float temp = *min;
+        *min = *max;
+        *max = temp;
+    }
+}
+
+int p2d_closest_circle_point_on_rect(struct p2d_vec2 circle_center, struct p2d_obb_verts verts) {
+    int result = -1;
+    float min_dist = FLT_MAX;
+
+    for(int i = 0; i < 4; i++) {
+        struct p2d_vec2 v = verts.verts[i];
+        float distance = sqrtf((v.x - circle_center.x) * (v.x - circle_center.x) + (v.y - circle_center.y) * (v.y - circle_center.y));
+
+        if(distance < min_dist) {
+            min_dist = distance;
+            result = i;
+        }
+    }
+
+    return result;
 }

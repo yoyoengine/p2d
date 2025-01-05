@@ -96,7 +96,7 @@ add planes?
 chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) since both are mixed
 
 TODO:
-- rect-circle collision check (or the contact generation) is bugged out
-- triple check you can do what you did (change the move apart til after contact check(he might be doing weird cs stuff, it kinda seemed like flat deferred movement to the next frame as well))
+- circle throwing each other apart to land vertically
+- stacking issues (velocity is continuously increasing, so penetration each frame is increasing)
 - continue the grind with the rotation and torque stuff
 - collision and trigger callbacks!
