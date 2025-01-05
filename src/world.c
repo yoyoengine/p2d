@@ -83,7 +83,7 @@ void p2d_world_remove_all() {
         p2d_world[i] = NULL;
     }
     p2d_state.p2d_world_node_count = 0;
-    p2d_state.p2d_object_count = 0;
+    // p2d_state.p2d_object_count = 0;
 }
 
 /*

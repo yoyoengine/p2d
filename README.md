@@ -97,6 +97,5 @@ chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) sinc
 
 TODO:
 - (sink) stacking issues (velocity is continuously increasing, so penetration each frame is increasing)
-- still intermittant bug with freak out collisions (WHY!??!?!?)
 - continue the grind with the rotation and torque stuff
 - collision and trigger callbacks!
