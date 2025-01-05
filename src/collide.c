@@ -96,12 +96,10 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
 
     struct p2d_vec2 direction = {rect_center.x - circle->x, rect_center.y - circle->y};
 
-    if(lla_vec2_dot(p2d_struct_to_vec(direction), p2d_struct_to_vec(info->normal)) < 0.0f) {
+    // WARNING WARNING: DIFFERENT FROM 2bit video!! has to be >0 (I have no clue why)
+    if(lla_vec2_dot(p2d_struct_to_vec(direction), p2d_struct_to_vec(info->normal)) > 0.0f) {
         info->normal = (struct p2d_vec2){-info->normal.x, -info->normal.y};
     }
-
-    printf("Normal: %f %f\n", info->normal.x, info->normal.y);
-    printf("Depth: %f\n", info->depth);
 
     return true;
 }
