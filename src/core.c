@@ -224,7 +224,7 @@ void p2d_logf(int level, const char *fmt, ...) {
     This struct is really just for ease of use (and avoiding traversing a list
     in the resolution for contacts)
 */
-struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 normal, float penetration, struct p2d_contact_list *contacts) {
+struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct p2d_object *b, vec2_t normal, float penetration, struct p2d_contact_list *contacts) {
     struct p2d_collision_manifold manifold = {0};
     manifold.a = a;
     manifold.b = b;
@@ -239,8 +239,8 @@ struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct
     return manifold;
 }
 
-void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, struct p2d_vec2 normal, float depth) {
-    struct p2d_vec2 mtv = {normal.x * depth, normal.y * depth};
+void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t normal, float depth) {
+    vec2_t mtv = {normal.x * depth, normal.y * depth};
 
     if(a->is_static) {
         b->x += mtv.x;

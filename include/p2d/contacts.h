@@ -15,8 +15,8 @@
 #include "p2d/core.h"
 
 struct p2d_contact {
-    struct p2d_vec2 contact_point;
-    struct p2d_vec2 contact_normal;
+    vec2_t contact_point;
+    vec2_t contact_normal;
 
     float penetration;
 };

@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
 
     struct p2d_contact_list *last_contacts = NULL;
 
-    p2d_state.gravity = (struct p2d_vec2){.x = 0, .y = 9.8f};
+    p2d_state.gravity = (vec2_t){.x = 0, .y = 9.8f};
 
     while(1) {
         int time = SDL_GetTicks();

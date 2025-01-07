@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -47,13 +47,13 @@ void _p2d_basic_resolution(struct p2d_collision_manifold *manifold) {
 
     vec2_t relative_velocity = lla_vec2_sub((vec2_t){.data={b->vx, b->vy}}, (vec2_t){.data={a->vx, a->vy}});
 
-    if(lla_vec2_dot(relative_velocity, p2d_struct_to_vec(manifold->normal)) > 0) {
+    if(lla_vec2_dot(relative_velocity, manifold->normal) > 0) {
         return;
     }
 
     float e = fminf(a->restitution, b->restitution);
 
-    float j = -(1.0f + e) * lla_vec2_dot(relative_velocity, p2d_struct_to_vec(manifold->normal));
+    float j = -(1.0f + e) * lla_vec2_dot(relative_velocity, manifold->normal);
     j /= (1.0f/a->mass) + (1.0f/b->mass);
 
     a->vx -= (j * manifold->normal.x) * (1.0f/a->mass);

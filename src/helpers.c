@@ -12,8 +12,8 @@
 #include "p2d/helpers.h"
 #include "p2d/types.h"
 
-struct p2d_vec2 p2d_object_center(struct p2d_object *object) {
-    struct p2d_vec2 center = {0};
+vec2_t p2d_object_center(struct p2d_object *object) {
+    vec2_t center = {0};
 
     switch(object->type) {
         case P2D_OBJECT_RECTANGLE:
@@ -81,24 +81,16 @@ struct p2d_obb p2d_get_obb(struct p2d_object *object) {
     }
 }
 
-vec2_t p2d_struct_to_vec(struct p2d_vec2 vec) {
-    return (vec2_t){vec.x, vec.y};
-}
-
-struct p2d_vec2 p2d_vec_to_struct(vec2_t vec) {
-    return (struct p2d_vec2){vec.data[0], vec.data[1]};
-}
-
-void p2d_closest_point_on_segment_to_point(struct p2d_vec2 sega, struct p2d_vec2 segb, struct p2d_vec2 point, struct p2d_vec2 *outPoint, float *outDist) {
-    struct p2d_vec2 ab = {segb.x - sega.x, segb.y - sega.y};
-    struct p2d_vec2 ap = {point.x - sega.x, point.y - sega.y};
+void p2d_closest_point_on_segment_to_point(vec2_t sega, vec2_t segb, vec2_t point, vec2_t *outPoint, float *outDist) {
+    vec2_t ab = {segb.x - sega.x, segb.y - sega.y};
+    vec2_t ap = {point.x - sega.x, point.y - sega.y};
 
     float ab_dot_ap = ab.x * ap.x + ab.y * ap.y;
     float ab_len_sq = ab.x * ab.x + ab.y * ab.y;
     
     float t = ab_dot_ap / ab_len_sq;
     
-    struct p2d_vec2 closest;
+    vec2_t closest;
     if(t < 0) {
         closest = sega;
     }
@@ -106,7 +98,7 @@ void p2d_closest_point_on_segment_to_point(struct p2d_vec2 sega, struct p2d_vec2
         closest = segb;
     }
     else {
-        closest = (struct p2d_vec2){
+        closest = (vec2_t){
             .x = sega.x + ab.x * t,
             .y = sega.y + ab.y * t
         };
@@ -128,13 +120,13 @@ bool p2d_nearly_equal(float a, float b) {
     return fabs(a - b) < EPSILON;
 }
 
-bool p2d_vec2_nearly_equal(struct p2d_vec2 a, struct p2d_vec2 b) {
+bool p2d_vec2_nearly_equal(vec2_t a, vec2_t b) {
     return p2d_nearly_equal(a.x, b.x) && p2d_nearly_equal(a.y, b.y);
 }
 
-// bool p2d_point_in_obb(struct p2d_vec2 point, struct p2d_obb obb) {
+// bool p2d_point_in_obb(vec2_t point, struct p2d_obb obb) {
 //     // Transform point to OBB local space
-//     struct p2d_vec2 local = {
+//     vec2_t local = {
 //         .x = point.x - obb.x,
 //         .y = point.y - obb.y
 //     };
@@ -144,7 +136,7 @@ bool p2d_vec2_nearly_equal(struct p2d_vec2 a, struct p2d_vec2 b) {
 //     float s = sinf(angle);
 //     float c = cosf(angle);
 
-//     struct p2d_vec2 rotated = {
+//     vec2_t rotated = {
 //         .x = c * local.x - s * local.y,
 //         .y = s * local.x + c * local.y
 //     };
@@ -157,33 +149,28 @@ bool p2d_aabbs_intersect(struct p2d_aabb a, struct p2d_aabb b) {
     return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
-struct p2d_vec2 p2d_vec2_normalize(struct p2d_vec2 vec) {
-    float mag = sqrtf(vec.x * vec.x + vec.y * vec.y);
-    return (struct p2d_vec2){vec.x / mag, vec.y / mag};
-}
-
-void p2d_project_obb_to_axis(struct p2d_obb_verts verts, struct p2d_vec2 axis, float *min, float *max) {
+void p2d_project_obb_to_axis(struct p2d_obb_verts verts, vec2_t axis, float *min, float *max) {
     *min = FLT_MAX;
     *max = FLT_MIN;
 
     for(int i = 0; i < 4; i++) {
-        vec2_t v = {.data={verts.verts[i].x, verts.verts[i].y}};
-        float proj = lla_vec2_dot(v, p2d_struct_to_vec(axis));
+        vec2_t v = {verts.verts[i].x, verts.verts[i].y};
+        float proj = lla_vec2_dot(v, axis);
 
         if(proj < *min) { *min = proj; }
         if(proj > *max) { *max = proj; }
     }
 }
 
-void p2d_project_circle_to_axis(struct p2d_vec2 center, float radius, struct p2d_vec2 axis, float *min, float *max) {
-    struct p2d_vec2 direction = p2d_vec2_normalize(axis);
-    vec2_t direction_and_radius = lla_vec2_scale(p2d_struct_to_vec(direction), radius);
+void p2d_project_circle_to_axis(vec2_t center, float radius, vec2_t axis, float *min, float *max) {
+    vec2_t direction = lla_vec2_normalize(axis);
+    vec2_t direction_and_radius = lla_vec2_scale(direction, radius);
 
-    vec2_t p1 = lla_vec2_add(p2d_struct_to_vec(center), direction_and_radius);
-    vec2_t p2 = lla_vec2_sub(p2d_struct_to_vec(center), direction_and_radius);
+    vec2_t p1 = lla_vec2_add(center, direction_and_radius);
+    vec2_t p2 = lla_vec2_sub(center, direction_and_radius);
 
-    *min = lla_vec2_dot(p1, p2d_struct_to_vec(axis));
-    *max = lla_vec2_dot(p2, p2d_struct_to_vec(axis));
+    *min = lla_vec2_dot(p1, axis);
+    *max = lla_vec2_dot(p2, axis);
 
     if(*min > *max) {
         float temp = *min;
@@ -192,12 +179,12 @@ void p2d_project_circle_to_axis(struct p2d_vec2 center, float radius, struct p2d
     }
 }
 
-int p2d_closest_circle_point_on_rect(struct p2d_vec2 circle_center, struct p2d_obb_verts verts) {
+int p2d_closest_circle_point_on_rect(vec2_t circle_center, struct p2d_obb_verts verts) {
     int result = -1;
     float min_dist = FLT_MAX;
 
     for(int i = 0; i < 4; i++) {
-        struct p2d_vec2 v = verts.verts[i];
+        vec2_t v = verts.verts[i];
         float distance = sqrtf((v.x - circle_center.x) * (v.x - circle_center.x) + (v.y - circle_center.y) * (v.y - circle_center.y));
 
         if(distance < min_dist) {

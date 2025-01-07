@@ -22,7 +22,7 @@
 // shape collisions (norm+depth) //
 
 struct p2d_collision_info {
-    struct p2d_vec2 normal;
+    vec2_t normal;
     float depth;
 };
 

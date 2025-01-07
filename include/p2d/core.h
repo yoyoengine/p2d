@@ -8,6 +8,8 @@
 #ifndef P2D_CORE_H
 #define P2D_CORE_H
 
+#include <Lilith.h>
+
 #include "p2d/export.h"
 #include "p2d/queue.h"
 #include "p2d/types.h"
@@ -68,7 +70,7 @@ struct p2d_state {
     int _cell_size;
 
     // init
-    struct p2d_vec2 gravity;
+    vec2_t gravity;
 
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);
@@ -135,10 +137,10 @@ struct p2d_object {
 struct p2d_collision_manifold {
     struct p2d_object *a;
     struct p2d_object *b;
-    struct p2d_vec2 normal;
+    vec2_t normal;
     float penetration;
 
-    struct p2d_vec2 contact_points[2];
+    vec2_t contact_points[2];
     int contact_count;
 };
 

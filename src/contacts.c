@@ -111,8 +111,8 @@ struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d
 */
 
 void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, struct p2d_object *a, struct p2d_object *b) {
-    struct p2d_vec2 midline = { b->x - a->x, b->y - a->y };
-    float mag = lla_vec2_magnitude(p2d_struct_to_vec(midline));
+    vec2_t midline = { b->x - a->x, b->y - a->y };
+    float mag = lla_vec2_magnitude(midline);
 
     if(mag <= 0 || mag >= a->circle.radius + b->circle.radius) {
         return;
@@ -120,9 +120,9 @@ void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, str
 
     struct p2d_contact contact = {0};
 
-    struct p2d_vec2 normal = { midline.x / mag, midline.y / mag };
+    vec2_t normal = { midline.x / mag, midline.y / mag };
 
-    contact.contact_point = (struct p2d_vec2){ a->x + normal.x * a->circle.radius, a->y + normal.y * a->circle.radius };
+    contact.contact_point = (vec2_t){ a->x + normal.x * a->circle.radius, a->y + normal.y * a->circle.radius };
 
     contact.contact_normal = normal;
     contact.penetration = a->circle.radius + b->circle.radius - mag;
@@ -147,14 +147,14 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
     struct p2d_obb_verts verts = p2d_obb_to_verts(p2d_get_obb(rect));
 
     float min_dist = FLT_MAX;
-    struct p2d_vec2 min_closest_point = {0};
-    struct p2d_vec2 va = verts.verts[0];
+    vec2_t min_closest_point = {0};
+    vec2_t va = verts.verts[0];
     for(int i = 0; i < 4; i++) {
-        struct p2d_vec2 vb = verts.verts[(i + 1) % 4];
+        vec2_t vb = verts.verts[(i + 1) % 4];
 
-        struct p2d_vec2 closest_point = {0};
+        vec2_t closest_point = {0};
         float dist = 0;
-        p2d_closest_point_on_segment_to_point(va, vb, (struct p2d_vec2){circle->x, circle->y}, &closest_point, &dist);
+        p2d_closest_point_on_segment_to_point(va, vb, (vec2_t){circle->x, circle->y}, &closest_point, &dist);
 
         if(dist < min_dist) {
             min_dist = dist;
@@ -167,13 +167,13 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
     contact.contact_point = min_closest_point;
     contact.penetration = circle->circle.radius - min_dist;
 
-    struct p2d_vec2 delta = {circle->x - contact.contact_point.x, circle->y - contact.contact_point.y};
-    float dist = lla_vec2_magnitude(p2d_struct_to_vec(delta));
+    vec2_t delta = {circle->x - contact.contact_point.x, circle->y - contact.contact_point.y};
+    float dist = lla_vec2_magnitude(delta);
     if(dist > 0) {
-        contact.contact_normal = (struct p2d_vec2){delta.x / dist, delta.y / dist};
+        contact.contact_normal = (vec2_t){delta.x / dist, delta.y / dist};
     }
     else {
-        contact.contact_normal = (struct p2d_vec2){1, 0};
+        contact.contact_normal = (vec2_t){1, 0};
     }
 
     if(contact.penetration < 0) { return; }
@@ -197,14 +197,14 @@ void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p
 
     // for each vertex in a
     for(int i = 0; i < 4; i++) {
-        struct p2d_vec2 vp = verts_a.verts[i];
+        vec2_t vp = verts_a.verts[i];
         
         // get edges from b
         for(int j = 0; j < 4; j++) {
-            struct p2d_vec2 va = verts_b.verts[j];
-            struct p2d_vec2 vb = verts_b.verts[(j + 1) % 4];
+            vec2_t va = verts_b.verts[j];
+            vec2_t vb = verts_b.verts[(j + 1) % 4];
         
-            struct p2d_vec2 closest_point = {0};
+            vec2_t closest_point = {0};
             float dist = 0;
             p2d_closest_point_on_segment_to_point(va, vb, vp, &closest_point, &dist);
 
@@ -225,14 +225,14 @@ void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p
 
     // for each vertex in b
     for(int i = 0; i < 4; i++) {
-        struct p2d_vec2 vp = verts_b.verts[i];
+        vec2_t vp = verts_b.verts[i];
         
         // get edges from a
         for(int j = 0; j < 4; j++) {
-            struct p2d_vec2 va = verts_a.verts[j];
-            struct p2d_vec2 vb = verts_a.verts[(j + 1) % 4];
+            vec2_t va = verts_a.verts[j];
+            vec2_t vb = verts_a.verts[(j + 1) % 4];
         
-            struct p2d_vec2 closest_point = {0};
+            vec2_t closest_point = {0};
             float dist = 0;
             p2d_closest_point_on_segment_to_point(va, vb, vp, &closest_point, &dist);
 
