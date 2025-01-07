@@ -56,7 +56,7 @@ target_link_libraries(p2d PUBLIC lilith)
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(p2d PRIVATE -Wall -Wextra -Wpedantic -Werror)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(p2d PRIVATE /W4 /WX)
+    target_compile_options(p2d PRIVATE /W4 /WX /wd4201)
 endif()
 
 ###############
