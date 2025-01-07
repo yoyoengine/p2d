@@ -53,4 +53,9 @@ P2D_API void p2d_world_remove(int world_hash, struct p2d_object *object);
 */
 P2D_API void p2d_world_remove_all();
 
+/*
+    Rebuild the world state for broad phase collision detection
+*/
+P2D_API void p2d_rebuild_world();
+
 #endif // P2D_WORLD_H

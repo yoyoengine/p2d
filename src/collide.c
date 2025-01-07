@@ -19,15 +19,15 @@ bool p2d_collide_circle_circle(struct p2d_object *a, struct p2d_object *b, struc
         p2d_logf(P2D_LOG_ERROR, "p2d_collide_circle_circle: invalid arguments.\n");
         return false;
     }
-    info->depth = 0; info->normal = (vec2_t){0, 0};
+    info->depth = 0; info->normal = (vec2_t){{0, 0}};
 
-    vec2_t midline = { b->x - a->x, b->y - a->y };
+    vec2_t midline = {{ b->x - a->x, b->y - a->y }};
     float mag = lla_vec2_magnitude(midline);
 
     if(mag <= 0 || mag >= a->circle.radius + b->circle.radius)
         return false;        
 
-    info->normal = (vec2_t){ midline.x / mag, midline.y / mag };
+    info->normal = (vec2_t){{ midline.x / mag, midline.y / mag }};
     info->depth = a->circle.radius + b->circle.radius - mag;
 
     return true;
@@ -38,9 +38,9 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
         p2d_logf(P2D_LOG_ERROR, "p2d_collide_rect_circle: invalid arguments.\n");
         return false;
     }
-    info->depth = FLT_MAX; info->normal = (vec2_t){0, 0};
+    info->depth = FLT_MAX; info->normal = (vec2_t){{0, 0}};
 
-    vec2_t axis = {0, 0};
+    vec2_t axis = {{0, 0}};
     float axis_depth = 0;
     float min_a, max_a, min_b, max_b;
 
@@ -51,13 +51,13 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
         vec2_t va = rect_verts.verts[i];
         vec2_t vb = rect_verts.verts[(i + 1) % 4];
 
-        vec2_t edge = {vb.x - va.x, vb.y - va.y};
-        axis = (vec2_t){-edge.y, edge.x};
+        vec2_t edge = {{vb.x - va.x, vb.y - va.y}};
+        axis = (vec2_t){{-edge.y, edge.x}};
         axis = lla_vec2_normalize(axis);
 
         p2d_project_obb_to_axis(rect_verts, axis, &min_a, &max_a);
 
-        vec2_t circ_center = {circle->x, circle->y};
+        vec2_t circ_center = {{circle->x, circle->y}};
         p2d_project_circle_to_axis(circ_center, circle->circle.radius, axis, &min_b, &max_b);
 
         if(min_a >= max_b || max_a <= min_b) {
@@ -72,14 +72,14 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
         }
     }
 
-    int cp_index = p2d_closest_circle_point_on_rect((vec2_t){circle->x, circle->y}, rect_verts);
+    int cp_index = p2d_closest_circle_point_on_rect((vec2_t){{circle->x, circle->y}}, rect_verts);
     vec2_t cp = rect_verts.verts[cp_index];
 
-    axis = (vec2_t){cp.x - circle->x, cp.y - circle->y};
+    axis = (vec2_t){{cp.x - circle->x, cp.y - circle->y}};
     axis = lla_vec2_normalize(axis);
 
     p2d_project_obb_to_axis(rect_verts, axis, &min_a, &max_a);
-    p2d_project_circle_to_axis((vec2_t){circle->x, circle->y}, circle->circle.radius, axis, &min_b, &max_b);
+    p2d_project_circle_to_axis((vec2_t){{circle->x, circle->y}}, circle->circle.radius, axis, &min_b, &max_b);
 
     if(min_a >= max_b || max_a <= min_b) {
         return false;
@@ -94,11 +94,11 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
 
     vec2_t rect_center = p2d_object_center(rect);
 
-    vec2_t direction = {rect_center.x - circle->x, rect_center.y - circle->y};
+    vec2_t direction = {{rect_center.x - circle->x, rect_center.y - circle->y}};
 
     // WARNING WARNING: DIFFERENT FROM 2bit video!! has to be >0 (I have no clue why)
     if(lla_vec2_dot(direction, info->normal) > 0.0f) {
-        info->normal = (vec2_t){-info->normal.x, -info->normal.y};
+        info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
     return true;
@@ -109,7 +109,7 @@ bool p2d_collide_rect_rect(struct p2d_object *a, struct p2d_object *b, struct p2
         p2d_logf(P2D_LOG_ERROR, "p2d_collide_rect_rect: invalid arguments.\n");
         return false;
     }
-    info->depth = FLT_MAX; info->normal = (vec2_t){0, 0};
+    info->depth = FLT_MAX; info->normal = (vec2_t){{0, 0}};
 
     float min_a, max_a, min_b, max_b;
     struct p2d_obb_verts a_verts = p2d_obb_to_verts(p2d_get_obb(a));
@@ -119,8 +119,8 @@ bool p2d_collide_rect_rect(struct p2d_object *a, struct p2d_object *b, struct p2
         vec2_t va = a_verts.verts[i];
         vec2_t vb = a_verts.verts[(i + 1) % 4];
 
-        vec2_t edge = {vb.x - va.x, vb.y - va.y};
-        vec2_t axis = {-edge.y, edge.x}; 
+        vec2_t edge = {{vb.x - va.x, vb.y - va.y}};
+        vec2_t axis = {{-edge.y, edge.x}}; 
         axis = lla_vec2_normalize(axis);
 
         p2d_project_obb_to_axis(a_verts, axis, &min_a, &max_a);
@@ -142,8 +142,8 @@ bool p2d_collide_rect_rect(struct p2d_object *a, struct p2d_object *b, struct p2
         vec2_t va = b_verts.verts[i];
         vec2_t vb = b_verts.verts[(i + 1) % 4];
 
-        vec2_t edge = {vb.x - va.x, vb.y - va.y};
-        vec2_t axis = {-edge.y, edge.x}; 
+        vec2_t edge = {{vb.x - va.x, vb.y - va.y}};
+        vec2_t axis = {{-edge.y, edge.x}}; 
         axis = lla_vec2_normalize(axis);
 
         p2d_project_obb_to_axis(a_verts, axis, &min_a, &max_a);
@@ -164,10 +164,10 @@ bool p2d_collide_rect_rect(struct p2d_object *a, struct p2d_object *b, struct p2
     vec2_t a_center = p2d_object_center(a);
     vec2_t b_center = p2d_object_center(b);
 
-    vec2_t direction = {b_center.x - a_center.x, b_center.y - a_center.y};
+    vec2_t direction = {{b_center.x - a_center.x, b_center.y - a_center.y}};
 
     if(lla_vec2_dot(direction, info->normal) < 0.0f) {
-        info->normal = (vec2_t){-info->normal.x, -info->normal.y};
+        info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
     return true;
@@ -183,7 +183,7 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
         p2d_logf(P2D_LOG_ERROR, "p2d_collide: invalid arguments.\n");
         return false;
     }
-    info->depth = 0; info->normal = (vec2_t){0, 0};
+    info->depth = 0; info->normal = (vec2_t){{0, 0}};
 
     bool result, swapped = false;
 
@@ -213,7 +213,7 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
     }
 
     if(result && swapped) {
-        info->normal = (vec2_t){-info->normal.x, -info->normal.y};
+        info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
     return result;

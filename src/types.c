@@ -31,11 +31,11 @@ struct p2d_obb_verts p2d_obb_to_verts(struct p2d_obb obb) {
     /*
         Rotate around center
     */
-    vec2_t center = {obb.x + obb.w / 2, obb.y + obb.h / 2};
+    vec2_t center = {{obb.x + obb.w / 2, obb.y + obb.h / 2}};
     mat3_t rot = lla_mat3_rotate_around(lla_mat3_identity(), center, obb.r);
 
     for(int i = 0; i < 4; i++) {
-        vec2_t vert = {out.verts[i].x, out.verts[i].y};
+        vec2_t vert = {{out.verts[i].x, out.verts[i].y}};
         vert = lla_mat3_mult_vec2(rot, vert);
         out.verts[i].x = vert.data[0];
         out.verts[i].y = vert.data[1];

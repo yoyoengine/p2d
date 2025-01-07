@@ -1,0 +1,74 @@
+name: Compilation Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-gcc:
+    name: Build with GCC
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: sudo apt update && sudo apt-get install -y gcc cmake make
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure with CMake
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          CC=gcc cmake -DBUILD_P2D_TESTS=ON ..
+
+      - name: Build with GCC
+        run: |
+          cd ${{ github.workspace }}/build
+          make -j${nproc}
+
+  build-clang:
+    name: Build with Clang
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: sudo apt update && sudo apt-get install -y clang cmake make
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure with CMake
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          CC=clang cmake -DBUILD_P2D_TESTS=ON ..
+      
+      - name: Build with Clang
+        run: |
+          cd ${{ github.workspace }}/build
+          make -j${nproc}
+
+  build-msvc:
+      name: Build with MSVC
+      runs-on: windows-latest
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - uses: ilammy/msvc-dev-cmd@v1.13.0
+        - name: Configure with CMake
+          run: |
+            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\build"
+            cd ${{ github.workspace }}\\build
+            cmake -DBUILD_P2D_TESTS=ON ..
+        
+        - name: Build with MSVC
+          run: |
+            cd ${{ github.workspace }}\\build
+            cmake --build . --config Release

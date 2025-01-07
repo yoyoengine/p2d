@@ -82,8 +82,8 @@ struct p2d_obb p2d_get_obb(struct p2d_object *object) {
 }
 
 void p2d_closest_point_on_segment_to_point(vec2_t sega, vec2_t segb, vec2_t point, vec2_t *outPoint, float *outDist) {
-    vec2_t ab = {segb.x - sega.x, segb.y - sega.y};
-    vec2_t ap = {point.x - sega.x, point.y - sega.y};
+    vec2_t ab = {{segb.x - sega.x, segb.y - sega.y}};
+    vec2_t ap = {{point.x - sega.x, point.y - sega.y}};
 
     float ab_dot_ap = ab.x * ap.x + ab.y * ap.y;
     float ab_len_sq = ab.x * ab.x + ab.y * ab.y;
@@ -154,7 +154,7 @@ void p2d_project_obb_to_axis(struct p2d_obb_verts verts, vec2_t axis, float *min
     *max = FLT_MIN;
 
     for(int i = 0; i < 4; i++) {
-        vec2_t v = {verts.verts[i].x, verts.verts[i].y};
+        vec2_t v = {{verts.verts[i].x, verts.verts[i].y}};
         float proj = lla_vec2_dot(v, axis);
 
         if(proj < *min) { *min = proj; }

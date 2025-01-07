@@ -240,7 +240,7 @@ struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct
 }
 
 void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t normal, float depth) {
-    vec2_t mtv = {normal.x * depth, normal.y * depth};
+    vec2_t mtv = {.x = normal.x * depth, .y = normal.y * depth};
 
     if(a->is_static) {
         b->x += mtv.x;
@@ -336,7 +336,7 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                         p2d_state.p2d_contacts_found += contacts->count;
 
                         // debug: add all contacts to the global list
-                        for(int i = 0; i < contacts->count; i++) {
+                        for(size_t i = 0; i < contacts->count; i++) {
                             p2d_contact_list_add(every_contact, contacts->contacts[i]);
                         }
 

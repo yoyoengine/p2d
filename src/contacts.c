@@ -64,54 +64,11 @@ void p2d_contact_list_clear(struct p2d_contact_list* list) {
 */
 
 /*
-    Maybe refactor in the future: but this function also checks for collisions BEFORE doing the
-    contact generation (two distinc phases)
-*/
-struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d_object *b) {
-    struct p2d_contact_list* data = p2d_contact_list_create(1); // assume 1 contact initially
-
-    // early out: aabb check
-    if(!p2d_aabbs_intersect(p2d_get_aabb(a), p2d_get_aabb(b))) {
-        return data;
-    }
-
-    /*
-        Circle Circle
-    */
-    if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_CIRCLE) {
-        p2d_generate_circle_circle_contacts(data, a, b);
-        return data;
-    }
-
-    /*
-        Rect Circle
-    */
-    if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_RECTANGLE) {
-        p2d_generate_rect_circle_contacts(data, b, a);
-        return data;
-    }
-    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_CIRCLE) {
-        p2d_generate_rect_circle_contacts(data, a, b);
-        return data;
-    }
-
-    /*
-        Rect Rect
-    */
-    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
-        p2d_generate_rect_rect_contacts(data, a, b);
-        return data;
-    }
-
-    return data;
-}
-
-/*
     Circle Circle
 */
 
-void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, struct p2d_object *a, struct p2d_object *b) {
-    vec2_t midline = { b->x - a->x, b->y - a->y };
+void p2d_generate_circle_circle_contacts(struct p2d_contact_list *contacts, struct p2d_object *a, struct p2d_object *b) {
+    vec2_t midline = {{ b->x - a->x, b->y - a->y }};
     float mag = lla_vec2_magnitude(midline);
 
     if(mag <= 0 || mag >= a->circle.radius + b->circle.radius) {
@@ -120,9 +77,9 @@ void p2d_generate_circle_circle_contacts(struct p2d_contatct_list *contacts, str
 
     struct p2d_contact contact = {0};
 
-    vec2_t normal = { midline.x / mag, midline.y / mag };
+    vec2_t normal = {{ midline.x / mag, midline.y / mag }};
 
-    contact.contact_point = (vec2_t){ a->x + normal.x * a->circle.radius, a->y + normal.y * a->circle.radius };
+    contact.contact_point = (vec2_t){{ a->x + normal.x * a->circle.radius, a->y + normal.y * a->circle.radius }};
 
     contact.contact_normal = normal;
     contact.penetration = a->circle.radius + b->circle.radius - mag;
@@ -154,7 +111,7 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
 
         vec2_t closest_point = {0};
         float dist = 0;
-        p2d_closest_point_on_segment_to_point(va, vb, (vec2_t){circle->x, circle->y}, &closest_point, &dist);
+        p2d_closest_point_on_segment_to_point(va, vb, (vec2_t){{circle->x, circle->y}}, &closest_point, &dist);
 
         if(dist < min_dist) {
             min_dist = dist;
@@ -167,13 +124,13 @@ void p2d_generate_rect_circle_contacts(struct p2d_contact_list *contacts, struct
     contact.contact_point = min_closest_point;
     contact.penetration = circle->circle.radius - min_dist;
 
-    vec2_t delta = {circle->x - contact.contact_point.x, circle->y - contact.contact_point.y};
+    vec2_t delta = {{circle->x - contact.contact_point.x, circle->y - contact.contact_point.y}};
     float dist = lla_vec2_magnitude(delta);
     if(dist > 0) {
-        contact.contact_normal = (vec2_t){delta.x / dist, delta.y / dist};
+        contact.contact_normal = (vec2_t){{delta.x / dist, delta.y / dist}};
     }
     else {
-        contact.contact_normal = (vec2_t){1, 0};
+        contact.contact_normal = (vec2_t){{1, 0}};
     }
 
     if(contact.penetration < 0) { return; }
@@ -261,4 +218,47 @@ void p2d_generate_rect_rect_contacts(struct p2d_contact_list *contacts, struct p
         p2d_contact_list_add(contacts, contact1);
         p2d_contact_list_add(contacts, contact2);
     }
+}
+
+/*
+    Maybe refactor in the future: but this function also checks for collisions BEFORE doing the
+    contact generation (two distinc phases)
+*/
+struct p2d_contact_list * p2d_generate_contacts(struct p2d_object *a, struct p2d_object *b) {
+    struct p2d_contact_list* data = p2d_contact_list_create(1); // assume 1 contact initially
+
+    // early out: aabb check
+    if(!p2d_aabbs_intersect(p2d_get_aabb(a), p2d_get_aabb(b))) {
+        return data;
+    }
+
+    /*
+        Circle Circle
+    */
+    if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_CIRCLE) {
+        p2d_generate_circle_circle_contacts(data, a, b);
+        return data;
+    }
+
+    /*
+        Rect Circle
+    */
+    if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_RECTANGLE) {
+        p2d_generate_rect_circle_contacts(data, b, a);
+        return data;
+    }
+    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_CIRCLE) {
+        p2d_generate_rect_circle_contacts(data, a, b);
+        return data;
+    }
+
+    /*
+        Rect Rect
+    */
+    if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_RECTANGLE) {
+        p2d_generate_rect_rect_contacts(data, a, b);
+        return data;
+    }
+
+    return data;
 }

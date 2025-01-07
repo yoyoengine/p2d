@@ -54,6 +54,10 @@ while(current) {
 p2d_shutdown();
 ```
 
+## Testing
+
+`cmake -DBUILD_P2D_TESTS=ON ..`
+
 ## thoughts
 
 abandoning seperate colliders and rigidbodies
@@ -99,3 +103,8 @@ TODO:
 - (sink) stacking issues (velocity is continuously increasing, so penetration each frame is increasing)
 - continue the grind with the rotation and torque stuff
 - collision and trigger callbacks!
+
+- rect rect collision is broken
+- looks like velocities are still increasing improperly?
+
+you need to investigate the core before diving into complex resolution...
