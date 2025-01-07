@@ -24,7 +24,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
-          CC=gcc cmake -DBUILD_P2D_TESTS=ON ..
+          CC=gcc cmake -DBUILD_P2D_TESTS=ON -DSDL_UNIX_CONSOLE_BUILD=ON ..
 
       - name: Build with GCC
         run: |
@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/build
           cd ${{ github.workspace }}/build
-          CC=clang cmake -DBUILD_P2D_TESTS=ON ..
+          CC=clang cmake -DBUILD_P2D_TESTS=ON -DSDL_UNIX_CONSOLE_BUILD=ON ..
       
       - name: Build with Clang
         run: |
@@ -66,7 +66,7 @@ jobs:
           run: |
             New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\build"
             cd ${{ github.workspace }}\\build
-            cmake -DBUILD_P2D_TESTS=ON ..
+            cmake -DBUILD_P2D_TESTS=ON -DSDL_UNIX_CONSOLE_BUILD=ON ..
         
         - name: Build with MSVC
           run: |
