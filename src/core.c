@@ -176,12 +176,12 @@ bool p2d_remove_object(struct p2d_object *object) {
     return true;
 }
 
-bool p2d_remove_all_objects() {
+bool p2d_remove_all_objects(void) {
     p2d_world_remove_all();
     return true;
 }
 
-bool p2d_shutdown() {
+bool p2d_shutdown(void) {
     p2d_remove_all_objects();
     p2d_reset_collision_pairs();
     p2d_logf(P2D_LOG_INFO, "p2d shutdown.\n");

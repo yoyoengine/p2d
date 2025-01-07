@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -11,7 +11,7 @@
 
 struct p2d_resolution_queue p2d_resolution_queue = {0};
 
-void p2d_purge_queue() {
+void p2d_purge_queue(void) {
     struct p2d_queue_event *current = p2d_resolution_queue.head;
     while(current) {
         struct p2d_queue_event *next = current->next;

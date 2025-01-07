@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -72,7 +72,7 @@ void p2d_world_remove(int world_hash, struct p2d_object *object) {
     }
 }
 
-void p2d_world_remove_all() {
+void p2d_world_remove_all(void) {
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
         struct p2d_world_node *node = p2d_world[i];
         while(node != NULL) {
@@ -91,7 +91,7 @@ void p2d_world_remove_all() {
 
     see TODO in README.md, we can just not bother to create the world until ready
 */
-void p2d_rebuild_world() {
+void p2d_rebuild_world(void) {
     p2d_world_remove_all();
 
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {

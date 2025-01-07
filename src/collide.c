@@ -212,6 +212,11 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
         result = p2d_collide_rect_rect(a, b, info);
     }
 
+    else {
+        p2d_logf(P2D_LOG_ERROR, "p2d_collide: invalid object types.\n");
+        return false;
+    }
+
     if(result && swapped) {
         info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }

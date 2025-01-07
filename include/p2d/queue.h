@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -31,7 +31,7 @@ struct p2d_resolution_queue {
 };
 extern struct p2d_resolution_queue p2d_resolution_queue;
 
-P2D_API void p2d_purge_queue();
+P2D_API void p2d_purge_queue(void);
 
 P2D_API void p2d_queue_push(struct p2d_object *object, float delta_x, float delta_y, float delta_rotation);
 

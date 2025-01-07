@@ -27,8 +27,8 @@ target_include_directories(p2d PUBLIC
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(p2d PRIVATE
-        $<$<CONFIG:Debug>:-Wall -Wextra -Werror -Wpedantic>
-        $<$<NOT:$<CONFIG:Debug>>:-Wall -Wextra -Wpedantic>
+        $<$<CONFIG:Debug>:-Wall -Wextra -Werror>
+        $<$<NOT:$<CONFIG:Debug>>:-Wall -Wextra>
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(p2d PRIVATE

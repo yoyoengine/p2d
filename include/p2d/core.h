@@ -153,7 +153,7 @@ P2D_API bool p2d_init(int cell_size, void (*on_collision)(struct p2d_cb_data *da
 /*
     Shutdown the p2d simulation and free its memory
 */
-P2D_API bool p2d_shutdown();
+P2D_API bool p2d_shutdown(void);
 
 /*
     Register a p2d object to be simulated
@@ -168,7 +168,7 @@ P2D_API bool p2d_remove_object(struct p2d_object *object);
 /*
     Remove all objects from the simulation
 */
-P2D_API bool p2d_remove_all_objects();
+P2D_API bool p2d_remove_all_objects(void);
 
 /*
     Called externally to run one simulation step

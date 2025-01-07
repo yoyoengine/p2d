@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -51,11 +51,11 @@ P2D_API void p2d_world_remove(int world_hash, struct p2d_object *object);
 /*
     Unmap every object from the hash table
 */
-P2D_API void p2d_world_remove_all();
+P2D_API void p2d_world_remove_all(void);
 
 /*
     Rebuild the world state for broad phase collision detection
 */
-P2D_API void p2d_rebuild_world();
+P2D_API void p2d_rebuild_world(void);
 
 #endif // P2D_WORLD_H
