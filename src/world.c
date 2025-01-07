@@ -47,9 +47,9 @@ void p2d_world_remove(int world_hash, struct p2d_object *object) {
     }
 
     int index = world_hash;
-
     struct p2d_world_node *node = p2d_world[index];
     struct p2d_world_node *prev = NULL;
+    bool was_first = true;
 
     while(node != NULL) {
         if(node->object == object) {
@@ -60,13 +60,14 @@ void p2d_world_remove(int world_hash, struct p2d_object *object) {
             }
 
             free(node);
-            break;
-
-            // track freed buckets
-            if(p2d_world[index] == NULL)
+            
+            // Only decrement if we removed the last node in this bucket
+            if(p2d_world[index] == NULL && was_first) {
                 p2d_state.p2d_world_node_count--;
+            }
+            return;
         }
-
+        was_first = false;
         prev = node;
         node = node->next;
     }
