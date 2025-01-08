@@ -96,10 +96,10 @@ void p2d_for_each_intersecting_tile(struct p2d_object *object, void (*callback)(
 
     struct p2d_aabb aabb = p2d_get_aabb(object);
     
-    int start_tile_x = aabb.x / p2d_state._cell_size;
-    int start_tile_y = aabb.y / p2d_state._cell_size;
-    int end_tile_x = (aabb.x + aabb.w) / p2d_state._cell_size;
-    int end_tile_y = (aabb.y + aabb.h) / p2d_state._cell_size;
+    int start_tile_x = (int)(aabb.x / p2d_state._cell_size);
+    int start_tile_y = (int)(aabb.y / p2d_state._cell_size);
+    int end_tile_x = (int)((aabb.x + aabb.w) / p2d_state._cell_size);
+    int end_tile_y = (int)((aabb.y + aabb.h) / p2d_state._cell_size);
 
     for (int tile_x = start_tile_x; tile_x <= end_tile_x; tile_x++) {
         for (int tile_y = start_tile_y; tile_y <= end_tile_y; tile_y++) {

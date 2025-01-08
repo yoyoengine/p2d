@@ -108,3 +108,5 @@ TODO:
 - looks like velocities are still increasing improperly?
 
 you need to investigate the core before diving into complex resolution...
+
+- MSVC errors
