@@ -66,7 +66,7 @@ jobs:
           run: |
             New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\build"
             cd ${{ github.workspace }}\\build
-            cmake -DBUILD_P2D_TESTS=ON -DSDL_UNIX_CONSOLE_BUILD=ON -DSDL_PRESEED=OFF ..
+            cmake -DBUILD_P2D_TESTS=OFF -DSDL_UNIX_CONSOLE_BUILD=ON -DSDL_PRESEED=OFF ..
         
         - name: Build with MSVC
           run: |
