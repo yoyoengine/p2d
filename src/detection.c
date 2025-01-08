@@ -64,7 +64,7 @@ bool p2d_circle_intersects_aabb(struct p2d_circle circle, struct p2d_aabb aabb) 
         closest_y = aabb.y + aabb.h;
     }
 
-    float distance = sqrt((circle.x - closest_x) * (circle.x - closest_x) + (circle.y - closest_y) * (circle.y - closest_y));
+    float distance = (float)sqrt((circle.x - closest_x) * (circle.x - closest_x) + (circle.y - closest_y) * (circle.y - closest_y));
 
     return distance < circle.radius;
 }

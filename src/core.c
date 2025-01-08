@@ -104,10 +104,10 @@ void p2d_for_each_intersecting_tile(struct p2d_object *object, void (*callback)(
     for (int tile_x = start_tile_x; tile_x <= end_tile_x; tile_x++) {
         for (int tile_y = start_tile_y; tile_y <= end_tile_y; tile_y++) {
             struct p2d_aabb tile = {
-                .x = tile_x * p2d_state._cell_size,
-                .y = tile_y * p2d_state._cell_size,
-                .w = p2d_state._cell_size,
-                .h = p2d_state._cell_size
+                .x = (float)(tile_x * p2d_state._cell_size),
+                .y = (float)(tile_y * p2d_state._cell_size),
+                .w = (float)p2d_state._cell_size,
+                .h = (float)p2d_state._cell_size
             };
 
             if (_object_intersects_tile(object, tile)) {
@@ -234,7 +234,7 @@ struct p2d_collision_manifold p2d_generate_manifold(struct p2d_object *a, struct
 
     manifold.contact_points[0] = contacts->contacts[0].contact_point;
     manifold.contact_points[1] = contacts->contacts[1].contact_point;
-    manifold.contact_count = contacts->count;
+    manifold.contact_count = (int)contacts->count;
 
     return manifold;
 }
@@ -333,11 +333,11 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                             node_b = node_b->next;
                             continue;
                         }
-                        p2d_state.p2d_contacts_found += contacts->count;
+                        p2d_state.p2d_contacts_found += (int)contacts->count;
 
                         // debug: add all contacts to the global list
-                        for(size_t i = 0; i < contacts->count; i++) {
-                            p2d_contact_list_add(every_contact, contacts->contacts[i]);
+                        for(size_t z = 0; z < contacts->count; z++) {
+                            p2d_contact_list_add(every_contact, contacts->contacts[z]);
                         }
 
                         // create contact manifold for resolution
