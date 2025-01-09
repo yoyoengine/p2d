@@ -260,9 +260,6 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
 
 struct p2d_contact_list * p2d_step(float delta_time) {
     
-    // purge last queue, user should have consumed it by now
-    p2d_purge_queue();
-
     /*
         Step each object in the world
     */

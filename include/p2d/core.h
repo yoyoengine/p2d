@@ -11,7 +11,6 @@
 #include <Lilith.h>
 
 #include "p2d/export.h"
-#include "p2d/queue.h"
 #include "p2d/types.h"
 
 #include <stdbool.h>
@@ -106,9 +105,6 @@ struct p2d_object {
     float vx;
     float vy;
     float vr;
-    // float force_x;
-    // float force_y;
-    // float rotation_force;
     
     // shape properties
     float rotation;
@@ -132,6 +128,16 @@ struct p2d_object {
         engine's ECS to operate on its impulses when collisions occur.
     */
     void *user_data;
+
+    /*
+        Out Values
+
+        On Ticks, these values will be incremented/decremented by the delta
+        positions of the tick.
+    */
+    float * out_x;
+    float * out_y;
+    float * out_rotation;
 };
 
 struct p2d_collision_manifold {

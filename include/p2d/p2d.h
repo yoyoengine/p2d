@@ -23,7 +23,6 @@ extern "C" {
 #include "world.h"
 #include "helpers.h"
 #include "detection.h"
-#include "queue.h"
 #include "contacts.h"
 
 #ifdef __cplusplus

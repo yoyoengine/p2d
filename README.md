@@ -1,12 +1,23 @@
-# Physics2D
+<div align="center">
+    <picture style="width: 100%; height: auto;">
+        <source srcset=".github/media/p2dlogo.png"  media="(prefers-color-scheme: dark)">
+        <img src=".github/media/p2dlogo.png">
+    </picture>
+</div>
 
-A 2 dimensional rigidbody physics system written for yoyoengine
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![GitHub repo size](https://img.shields.io/github/repo-size/yoyoengine/p2d)
+
+---
+
+A 2D rigidbody physics system written for yoyoengine.
 
 ## Features
 
 - Broad phase collision detection, using a hashed spatial grid
 - OOB and Circle collision detection and resolution
-- exposes an iterator for synchronizing simulation to renderer
+- Collision and trigger callbacks
+- Easy synchronization with existing ECS
 
 ## Usage
 
@@ -33,80 +44,37 @@ obj.type = P2D_OBJECT_RECTANGLE,
 obj.x = 100;
 obj.y = 200;
 obj.vx = 100;
+obj.out_x = &YOUR_ECS_X;
+obj.out_y = &YOUR_ECS_Y;
+obj.out_rotation = &YOUR_ECS_ROTATION;
 p2d_register_object(&obj);
 // ...
 
-
-
-// typical update loop: (run this at the hz you want your physics to run at)
-struct p2d_queue_event *current = p2d_step(delta_time);
-while(current) {
-
-  /*
-    ...
-    sync the given object with your engine using the provided deltas in the callback
-    ...
-  */
-  current = current->next;
-} // do not free the queue objects, this happens internally
+// in your engine update loop: (run this at the hz you want your physics to run at)
+p2d_step(physics_delta_time);
 
 // before quitting, shutdown
 p2d_shutdown();
 ```
 
+## Future work
+
+| Item                | Description                                 | Priority | Progress        |
+|---------------------|---------------------------------------------|----------|-----------------|
+| Debug Resolution    | The current basic resolution has edge cases | High     | In Progress     |
+| Rotation Resolution | Implement rotation and torque               | High     | Planned         |
+| Advanced Gravity    | Allow seperate spatial fields of gravity    | Medium   | Maybe Later     |
+| New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
+| Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
+
 ## Testing
 
 `cmake -DBUILD_P2D_TESTS=ON ..`
 
-## thoughts
+## Resources
 
-abandoning seperate colliders and rigidbodies
+Here are some resources that helped me along the way, which can hopefully be useful to you too!
 
-how can we do logging from p2d into yoyoengine?
-
-## TODO:
-
-- maybe add obb check against aabb for optimization? rn we convert aabb to obb
-- determine parameters and callbacks this lib will perform. how do we handle trigger colliders?
-- how is yoyoengine merging collider AND rigidbody together?? if at all.
-- actual collision resolution
-
-## considerations
-
-in C, make sure we call a rigidbody_sync function to re-update the simulation with ecs changes
-
-## Future Improvements
-
-- Thread safe
-  - Should be simple because we are already "asynchronously" returning a queue of deltas.
-  - The complicated part is the "realtime" callbacks during simulation.
-    - Solution: these could be compiled into the queue for later execution.
-
-## TODO:
-
-Actually, i dont think i like the queue idea, like at all.
-
-- Wait until you finish the engine and then go back in to decide the sync. maybe its up to the engine to determine it based on its own delta tracking!
-  - honestly might be ideal, beacuse then there is no interop other than step, and its pretty easy to embed last_x,y,r into the ECS, and then update based on current p2d object 
-
-maybe fix seperation of world tracking, the insert into tile stuff being in core is really weird
-
-- honestly if we use the tracking array we dont need to index spatially, we can create the temp spatial every tick, we dont need to add until the exact start of broad phase
-
-refactor main.cpp stuff (yoinked obb thing)
-
-add planes?
-
-chgange P2D_MAX_OBJECTS to P2D_MAX_BUCKETS for clarity (only where applies) since both are mixed
-
-TODO:
-- (sink) stacking issues (velocity is continuously increasing, so penetration each frame is increasing)
-- continue the grind with the rotation and torque stuff
-- collision and trigger callbacks!
-
-- rect rect collision is broken
-- looks like velocities are still increasing improperly?
-
-you need to investigate the core before diving into complex resolution...
-
-- MSVC errors
+- [(Book) Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
+- [(Book) Real Time Collision Detection (Book)](https://a.co/d/g9Rpjsk)
+- [(Youtube) Two-Bit Coding Physics Engine Playlist](https://www.youtube.com/playlist?list=PLSlpr6o9vURwq3oxVZSimY8iC-cdd3kIs)

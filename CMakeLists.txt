@@ -14,7 +14,6 @@ add_library(p2d
     src/detection.c
     src/helpers.c
     src/types.c
-    src/queue.c
     src/resolution.c
     src/contacts.c
     src/pairs.c
