@@ -10,10 +10,7 @@
 #include "p2d/types.h"
 #include "p2d/detection.h"
 
-bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
-    struct p2d_obb_verts rect1 = p2d_obb_to_verts(a);
-    struct p2d_obb_verts rect2 = p2d_obb_to_verts(b);
-
+bool p2d_obb_verts_intersects_obb_verts(struct p2d_obb_verts rect1, struct p2d_obb_verts rect2) {
     for(int polyi = 0; polyi < 2; polyi++) {
         struct p2d_obb_verts rect = polyi == 0 ? rect1 : rect2;
 
@@ -44,6 +41,13 @@ bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
         }
     }
     return true;
+}
+
+bool p2d_obb_intersects_obb(struct p2d_obb a, struct p2d_obb b) {
+    struct p2d_obb_verts rect1 = p2d_obb_to_verts(a);
+    struct p2d_obb_verts rect2 = p2d_obb_to_verts(b);
+
+    return p2d_obb_verts_intersects_obb_verts(rect1, rect2);
 }
 
 // TODO: p2d_obb_intersects_aabb (should reduce computation for classifying into broad phase tiles)

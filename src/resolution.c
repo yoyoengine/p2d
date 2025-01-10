@@ -35,6 +35,14 @@ void p2d_object_step(struct p2d_object *object, float delta_time) {
     object->y += object->vy * delta_time;
     object->rotation += object->vr * delta_time;
 
+    // delta updates (engine syncing)
+    if(object->out_x)
+        *object->out_x += object->vx * delta_time;
+    if(object->out_y)
+        *object->out_y += object->vy * delta_time;
+    if(object->out_rotation)
+        *object->out_rotation += object->vr * delta_time;
+
     // reset forces
     // object->force_x = 0;
     // object->force_y = 0;
