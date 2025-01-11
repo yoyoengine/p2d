@@ -25,12 +25,12 @@ A 2D rigidbody physics system written for yoyoengine.
 #include <p2d/p2d.h>
 
 // example collision callback
-void collision_callback(p2d_cb_data* data) {
+void collision_callback(struct p2d_cb_data* data) {
   // ...
 }
 
 // example trigger callback
-void trigger_callback(p2d_cb_data* data) {
+void trigger_callback(struct p2d_cb_data* data) {
   // ...
 }
 
