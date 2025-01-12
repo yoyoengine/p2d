@@ -98,6 +98,10 @@ void p2d_rebuild_world(void) {
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
         struct p2d_object *object = p2d_objects[i];
         if(object != NULL) {
+            if(object->in_active && !*object->in_active) {
+                continue;
+            }
+
             p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
         }
     }

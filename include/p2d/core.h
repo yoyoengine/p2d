@@ -130,11 +130,9 @@ struct p2d_object {
     void *user_data;
 
     /*
-        Out Values
-
-        On Ticks, these values will be incremented/decremented by the delta
-        positions of the tick.
+        in/out reference values
     */
+    bool * in_active;
     float * out_x;
     float * out_y;
     float * out_rotation;
