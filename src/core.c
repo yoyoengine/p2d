@@ -245,16 +245,38 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
     if(a->is_static) {
         b->x += mtv.x;
         b->y += mtv.y;
+
+        // out
+        if(b->out_x)
+            *b->out_x += mtv.x;
+        if(b->out_y)
+            *b->out_y += mtv.y;
     }
     else if(b->is_static) {
         a->x += -mtv.x;
         a->y += -mtv.y;
+
+        // out
+        if(a->out_x)
+            *a->out_x += -mtv.x;
+        if(a->out_y)
+            *a->out_y += -mtv.y;
     }
     else {
         a->x += (-mtv.x / 2.0f);
         a->y += (-mtv.y / 2.0f);
         b->x += (mtv.x / 2.0f);
         b->y += (mtv.x / 2.0f);
+
+        // out
+        if(a->out_x)
+            *a->out_x += (-mtv.x / 2.0f);
+        if(a->out_y)
+            *a->out_y += (-mtv.y / 2.0f);
+        if(b->out_x)
+            *b->out_x += (mtv.x / 2.0f);
+        if(b->out_y)
+            *b->out_y += (mtv.y / 2.0f);
     }
 }
 
