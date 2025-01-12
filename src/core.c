@@ -266,7 +266,7 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
         a->x += (-mtv.x / 2.0f);
         a->y += (-mtv.y / 2.0f);
         b->x += (mtv.x / 2.0f);
-        b->y += (mtv.x / 2.0f);
+        b->y += (mtv.y / 2.0f);
 
         // out
         if(a->out_x)
