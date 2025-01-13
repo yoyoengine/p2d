@@ -30,9 +30,14 @@ struct p2d_state p2d_state = {0};
 bool p2d_init(
     int cell_size,
     void (*on_collision)(struct p2d_cb_data *data),
-    void (*on_trigger)(struct p2d_cb_data *data))
-{
+    void (*on_trigger)(struct p2d_cb_data *data),
+    void (*log_fn)(int level, const char *fmt, ...)
+){
+    // initialize external logger (if provided)
+    p2d_state.log = log_fn;
+
     if(cell_size <= 0) {
+        p2d_logf(P2D_LOG_ERROR, "p2d_init: cell_size must be greater than 0.\n");
         return false;
     }
     p2d_state._cell_size = cell_size;

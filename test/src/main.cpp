@@ -208,11 +208,10 @@ int main(int argc, char** argv) {
 
     int tile_size = 100;
 
-    if(!p2d_init(tile_size, collision_callback, trigger_callback)) {
+    if(!p2d_init(tile_size, collision_callback, trigger_callback, log_wrapper)) {
         printf("p2d_init failed\n");
         return 1;
     }
-    p2d_state.log = log_wrapper;
 
     SDL_Window* window;
     SDL_Renderer* renderer;

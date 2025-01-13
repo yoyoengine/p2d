@@ -134,7 +134,11 @@ struct p2d_collision_manifold {
     Initialize the p2d simulation
     cell_size: the size of each cell in the world (used for broad phase collision detection)
 */
-P2D_API bool p2d_init(int cell_size, void (*on_collision)(struct p2d_cb_data *data), void (*on_trigger)(struct p2d_cb_data *data));
+P2D_API bool p2d_init(
+    int cell_size, void (*on_collision)(struct p2d_cb_data *data), 
+    void (*on_trigger)(struct p2d_cb_data *data),
+    void (*log_fn)(int level, const char *fmt, ...)
+);
 
 /*
     Shutdown the p2d simulation and free its memory
