@@ -9,13 +9,16 @@
 
 #include "p2d/log.h"
 
+char buffer[2048];
+
 void p2d_logf(enum p2d_log_level lvl, const char *fmt, ...) {
     // if we have an external logging function, use it
     if(p2d_state.log) {
         va_list args;
         va_start(args, fmt);
-        p2d_state.log((int)lvl, fmt, args);
+        vsnprintf(buffer, sizeof(buffer), fmt, args);
         va_end(args);
+        p2d_state.log((int)lvl, buffer, NULL);
         return;
     }
 

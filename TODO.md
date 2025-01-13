@@ -2,4 +2,4 @@
 
 actually call callbacks
 
-p2d ye logf not working?
+velocities always increasing (bad!)
