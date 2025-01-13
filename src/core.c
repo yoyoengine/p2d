@@ -35,7 +35,6 @@ bool p2d_init(
 ){
     // initialize external logger (if provided)
     p2d_state.log = log_fn;
-    printf("cell_size: %d\n", cell_size);
 
     if(cell_size <= 0) {
         p2d_logf(P2D_LOG_ERROR, "p2d_init: cell_size must be greater than 0.\n");
