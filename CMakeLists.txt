@@ -9,6 +9,7 @@ Set(FETCHCONTENT_QUIET FALSE)
 set(CMAKE_BUILD_TYPE Debug)
 
 add_library(p2d
+    src/log.c
     src/core.c
     src/world.c
     src/detection.c

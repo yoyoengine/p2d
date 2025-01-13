@@ -5,9 +5,10 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
-#include "p2d/resolution.h"
-#include "p2d/contacts.h"
+#include "p2d/log.h"
 #include "p2d/helpers.h"
+#include "p2d/contacts.h"
+#include "p2d/resolution.h"
 
 void p2d_object_step(struct p2d_object *object, float delta_time) {
     if(!object) {

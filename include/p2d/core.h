@@ -25,25 +25,6 @@
     #define P2D_BUCKETS 1000
 #endif
 
-#ifdef P2D_HAS_YOYOENGINE
-    #include <yoyoengine.h>
-    #define p2d_logf(...) ye_logf(__VA_ARGS__)
-    #define P2D_LOG_DEBUG YE_LL_DEBUG
-    #define P2D_LOG_INFO YE_LL_INFO
-    #define P2D_LOG_WARN YE_LL_WARNING
-    #define P2D_LOG_ERROR YE_LLL_ERROR
-#else
-    enum p2d_log_level {
-        P2D_LOG_DEBUG,
-        P2D_LOG_INFO,
-        P2D_LOG_WARN,
-        P2D_LOG_ERROR
-    };
-
-    void p2d_logf(int level, const char *fmt, ...);
-#endif
-
-
 /*
     How callbacks and resolutions work:
 
@@ -74,6 +55,7 @@ struct p2d_state {
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);
     void (*on_trigger)(struct p2d_cb_data *data);
+    void (*log)(int level, const char *fmt, ...);
 
     // tracking / debug
     int p2d_object_count;

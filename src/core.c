@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "p2d/log.h"
 #include "p2d/core.h"
 #include "p2d/world.h"
 #include "p2d/types.h"
@@ -189,34 +190,6 @@ bool p2d_shutdown(void) {
 }
 
 
-
-//
-// MISC
-//
-
-#ifndef P2D_HAS_YOYOENGINE
-void p2d_logf(int level, const char *fmt, ...) {
-    switch(level){
-        case P2D_LOG_DEBUG:
-            printf("[DEBUG] ");
-            break;
-        case P2D_LOG_INFO:
-            printf("[INFO] ");
-            break;
-        case P2D_LOG_WARN:
-            printf("[WARN] ");
-            break;
-        case P2D_LOG_ERROR:
-            printf("[ERROR] ");
-            break;
-    }
-
-    va_list args;
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-}
-#endif
 
 /*
     In 2D, we can only have two possible contacts.

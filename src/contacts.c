@@ -8,6 +8,7 @@
 #include <float.h>
 #include <stdlib.h>
 
+#include "p2d/log.h"
 #include "p2d/core.h"
 #include "p2d/pairs.h"
 #include "p2d/helpers.h"

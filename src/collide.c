@@ -5,10 +5,11 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include "p2d/log.h"
 #include "p2d/core.h"
 #include "p2d/collide.h"
-#include "p2d/detection.h"
 #include "p2d/helpers.h"
+#include "p2d/detection.h"
 
 /*
     Shape Collide Functions (not yet for contact generation)

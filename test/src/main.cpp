@@ -158,6 +158,14 @@ void spawn_rect(int x, int y) {
     p2d_create_object(obj.get());
 }
 
+void log_wrapper(int level, const char* fmt, ...) {
+    printf("[WRAP] ");
+    va_list args;
+    va_start(args, fmt);
+    vprintf(fmt, args);
+    va_end(args);
+}
+
 int main(int argc, char** argv) {
     if(!SDL_Init(SDL_INIT_VIDEO)) {
         printf("SDL_Init failed: %s\n", SDL_GetError());
@@ -204,6 +212,7 @@ int main(int argc, char** argv) {
         printf("p2d_init failed\n");
         return 1;
     }
+    p2d_state.log = log_wrapper;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
