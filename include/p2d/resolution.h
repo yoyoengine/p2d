@@ -14,7 +14,7 @@
 #include "p2d/core.h"
 #include "p2d/types.h"
 
-P2D_API void p2d_object_step(struct p2d_object *object, float delta_time);
+P2D_API void p2d_object_step(struct p2d_object *object, float delta_time, int iterations);
 
 P2D_API void p2d_resolve_collision(struct p2d_collision_manifold *manifold);
 

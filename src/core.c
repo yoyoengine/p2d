@@ -29,6 +29,7 @@ struct p2d_state p2d_state = {0};
 
 bool p2d_init(
     int cell_size,
+    int substeps,
     void (*on_collision)(struct p2d_cb_data *data),
     void (*on_trigger)(struct p2d_cb_data *data),
     void (*log_fn)(int level, const char *fmt, ...)
@@ -41,6 +42,12 @@ bool p2d_init(
         return false;
     }
     p2d_state._cell_size = cell_size;
+
+    if(substeps <= 0) {
+        p2d_logf(P2D_LOG_ERROR, "p2d_init: substeps must be greater than 0.\n");
+        return false;
+    }
+    p2d_state._substeps = substeps;
 
     if(!on_collision) {
         p2d_logf(P2D_LOG_WARN, "p2d_init: on_collision is NULL.\n");
@@ -258,8 +265,13 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
     }
 }
 
-struct p2d_contact_list * p2d_step(float delta_time) {
-    
+// struct p2d_contact_list * p2d_step(float delta_time) {
+void p2d_step(float delta_time) {
+    // struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
+
+    // substepping
+    for(int it_track = 0; it_track < p2d_state._substeps; it_track++) {
+
     /*
         Step each object in the world
     */
@@ -268,7 +280,7 @@ struct p2d_contact_list * p2d_step(float delta_time) {
         if(object == NULL) {
             continue;
         }
-        p2d_object_step(object, delta_time);
+        p2d_object_step(object, delta_time, p2d_state._substeps);
     }
 
     /*
@@ -278,8 +290,6 @@ struct p2d_contact_list * p2d_step(float delta_time) {
 
     // reset collision pairs
     p2d_reset_collision_pairs();
-
-    struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
 
     /*
         For each bucket containing objects, generate contacts
@@ -333,9 +343,9 @@ struct p2d_contact_list * p2d_step(float delta_time) {
                         p2d_state.p2d_contacts_found += (int)contacts->count;
 
                         // debug: add all contacts to the global list
-                        for(size_t z = 0; z < contacts->count; z++) {
-                            p2d_contact_list_add(every_contact, contacts->contacts[z]);
-                        }
+                        // for(size_t z = 0; z < contacts->count; z++) {
+                        //     p2d_contact_list_add(every_contact, contacts->contacts[z]);
+                        // }
 
                         // create contact manifold for resolution
                         struct p2d_collision_manifold manifold =
@@ -356,5 +366,7 @@ struct p2d_contact_list * p2d_step(float delta_time) {
         }
     }
 
-    return every_contact;
+    } // substepping
+
+    // return every_contact;
 }

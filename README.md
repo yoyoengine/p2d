@@ -35,7 +35,7 @@ void trigger_callback(struct p2d_cb_data* data) {
 }
 
 // at some point during init
-p2d_init(TILE_SIZE, collision_callback, trigger_callback);
+p2d_init(TILE_SIZE, SUBSTEP_COUNT, collision_callback, trigger_callback);
 
 // create and register objects
 // ...
@@ -61,8 +61,8 @@ p2d_shutdown();
 
 | Item                | Description                                 | Priority | Progress        |
 |---------------------|---------------------------------------------|----------|-----------------|
-| Debug Resolution    | The current basic resolution has edge cases | High     | In Progress     |
-| Rotation Resolution | Implement rotation and torque               | High     | Planned         |
+| Debug Resolution    | The current basic resolution has edge cases | High     | Done            |
+| Rotation Resolution | Implement rotation and torque               | High     | In Progress     |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Medium   | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |

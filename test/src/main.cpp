@@ -132,8 +132,8 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .mass = .0001,
-        .restitution = 0.5,
+        .mass = .001,
+        .restitution = 0.9,
     });
     objects.push_back(obj);
 
@@ -150,8 +150,8 @@ void spawn_rect(int x, int y) {
             .width = 100,
             .height = 100,
         },
-        .mass = 2,
-        .restitution = 0.6,
+        .mass = .5,
+        .restitution = 0.5,
     });
     objects.push_back(obj);
 
@@ -206,9 +206,28 @@ int main(int argc, char** argv) {
     objects.push_back(obj);
     p2d_create_object(obj.get());
 
-    int tile_size = 100;
+    auto a = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        .is_static = true,
+        .x = 1920/2,
+        .y = 1080/2,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .circle= {
+            .radius = 150,
+        },
+        .mass = 10,
+        .restitution = 0.5,
+    });
+    objects.push_back(a);
+    p2d_create_object(a.get());
 
-    if(!p2d_init(tile_size, collision_callback, trigger_callback, log_wrapper)) {
+    int tile_size = 100;
+    int iterations = 20;
+
+    if(!p2d_init(tile_size, iterations, collision_callback, trigger_callback, log_wrapper)) {
         printf("p2d_init failed\n");
         return 1;
     }
@@ -273,29 +292,32 @@ int main(int argc, char** argv) {
         // printf("delta_time: %f\n", delta_time);
         
         if(!paused || single_setp) {
-            p2d_contact_list_clear(last_contacts);
+            p2d_contact_list_destroy(last_contacts);
 
-            last_contacts = p2d_step(delta_time);
+            // last_contacts = p2d_step(delta_time);
+            p2d_step(delta_time);
         }
 
-        // display the contact poitns on screen
-        for(int i = 0; i < last_contacts->count; i++) {
-            struct p2d_contact contact = last_contacts->contacts[i];
-            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+        // TODO: better alternative for accessing debug like this is set flag in state and read from field that gets internally mem managed
+
+        // // display the contact poitns on screen
+        // for(int i = 0; i < last_contacts->count; i++) {
+        //     struct p2d_contact contact = last_contacts->contacts[i];
+        //     SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
             
 
-            // larger rect to be more visible
-            SDL_FRect fr = {
-                .x = contact.contact_point.x - 5,
-                .y = contact.contact_point.y - 5,
-                .w = 10,
-                .h = 10,
-            };
-            SDL_RenderRect(renderer, &fr);
+        //     // larger rect to be more visible
+        //     SDL_FRect fr = {
+        //         .x = contact.contact_point.x - 5,
+        //         .y = contact.contact_point.y - 5,
+        //         .w = 10,
+        //         .h = 10,
+        //     };
+        //     SDL_RenderRect(renderer, &fr);
 
-            // draw the normal with proper magnitude given by penetration
-            SDL_RenderLine(renderer, contact.contact_point.x + contact.contact_normal.x * contact.penetration, contact.contact_point.y + contact.contact_normal.y * contact.penetration, contact.contact_point.x, contact.contact_point.y);
-        }
+        //     // draw the normal with proper magnitude given by penetration
+        //     SDL_RenderLine(renderer, contact.contact_point.x + contact.contact_normal.x * contact.penetration, contact.contact_point.y + contact.contact_normal.y * contact.penetration, contact.contact_point.x, contact.contact_point.y);
+        // }
 
         // // draw lines to divide tiles by specified size
         // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

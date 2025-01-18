@@ -98,7 +98,7 @@ bool p2d_collide_rect_circle(struct p2d_object *rect, struct p2d_object *circle,
     vec2_t direction = {{rect_center.x - circle->x, rect_center.y - circle->y}};
 
     // WARNING WARNING: DIFFERENT FROM 2bit video!! has to be >0 (I have no clue why)
-    if(lla_vec2_dot(direction, info->normal) > 0.0f) {
+    if(lla_vec2_dot(direction, info->normal) < 0.0f) {
         info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
@@ -186,7 +186,7 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
     }
     info->depth = 0; info->normal = (vec2_t){{0, 0}};
 
-    bool result, swapped = false;
+    bool result;
 
     /*
         Circle Circle
@@ -200,10 +200,10 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
     */
     else if(a->type == P2D_OBJECT_CIRCLE && b->type == P2D_OBJECT_RECTANGLE) {
         result = p2d_collide_rect_circle(b, a, info);
-        swapped = true;
     }
     else if(a->type == P2D_OBJECT_RECTANGLE && b->type == P2D_OBJECT_CIRCLE) {
         result = p2d_collide_rect_circle(a, b, info);
+        info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
     /*
@@ -216,10 +216,6 @@ bool p2d_collide(struct p2d_object *a, struct p2d_object *b, struct p2d_collisio
     else {
         p2d_logf(P2D_LOG_ERROR, "p2d_collide: invalid object types.\n");
         return false;
-    }
-
-    if(result && swapped) {
-        info->normal = (vec2_t){{-info->normal.x, -info->normal.y}};
     }
 
     return result;

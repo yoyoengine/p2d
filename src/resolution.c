@@ -10,7 +10,7 @@
 #include "p2d/contacts.h"
 #include "p2d/resolution.h"
 
-void p2d_object_step(struct p2d_object *object, float delta_time) {
+void p2d_object_step(struct p2d_object *object, float delta_time, int iterations) {
     if(!object) {
         p2d_logf(P2D_LOG_ERROR, "p2d_object_step: object is NULL.\n");
         return;
@@ -21,6 +21,9 @@ void p2d_object_step(struct p2d_object *object, float delta_time) {
         object->vy = 0;
         return;
     }
+
+    // account for substepping
+    delta_time /= (float)iterations;
 
     // apply gravity
     object->vx += p2d_state.gravity.x * delta_time;
@@ -43,6 +46,9 @@ void p2d_object_step(struct p2d_object *object, float delta_time) {
         *object->out_y += object->vy * delta_time;
     if(object->out_rotation)
         *object->out_rotation += object->vr * delta_time;
+
+    // debug - print objects new velocities
+    // printf("object %p: vx: %f, vy: %f, vr: %f\n", (void *)object, object->vx, object->vy, object->vr);
 
     // reset forces
     // object->force_x = 0;

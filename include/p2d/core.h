@@ -48,6 +48,7 @@ struct p2d_state {
     // config
     // passed on init
     int _cell_size;
+    int _substeps;
 
     // init
     vec2_t gravity;
@@ -135,7 +136,9 @@ struct p2d_collision_manifold {
     cell_size: the size of each cell in the world (used for broad phase collision detection)
 */
 P2D_API bool p2d_init(
-    int cell_size, void (*on_collision)(struct p2d_cb_data *data), 
+    int cell_size,
+    int substeps,
+    void (*on_collision)(struct p2d_cb_data *data), 
     void (*on_trigger)(struct p2d_cb_data *data),
     void (*log_fn)(int level, const char *fmt, ...)
 );
@@ -163,7 +166,8 @@ P2D_API bool p2d_remove_all_objects(void);
 /*
     Called externally to run one simulation step
 */
-P2D_API struct p2d_contact_list * p2d_step(float delta_time);
+// P2D_API struct p2d_contact_list * p2d_step(float delta_time);
+P2D_API void p2d_step(float delta_time);
 
 /*
     Helper-ish (poorly organized) functions
