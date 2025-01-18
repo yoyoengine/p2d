@@ -196,3 +196,29 @@ int p2d_closest_circle_point_on_rect(vec2_t circle_center, struct p2d_obb_verts 
 
     return result;
 }
+
+float p2d_inv_mass(struct p2d_object *obj) {
+    if(!obj) {
+        p2d_logf(P2D_LOG_ERROR, "p2d_inv_mass: object is NULL.\n");
+        return 1.0f;
+    }
+
+    if(obj->mass > 0.0f) {
+        return 1.0f / obj->mass;
+    }
+
+    return 0.0f;
+}
+
+float p2d_inv_inertia(struct p2d_object *obj) {
+    if(!obj) {
+        p2d_logf(P2D_LOG_ERROR, "p2d_inv_inertia: object is NULL.\n");
+        return 1.0f;
+    }
+
+    if(obj->inertia > 0.0f) {
+        return 1.0f / obj->inertia;
+    }
+
+    return 0.0f;
+}

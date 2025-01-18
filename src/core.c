@@ -163,6 +163,40 @@ bool p2d_create_object(struct p2d_object *object) {
         }
     }
 
+    object->mass = 0.0f;
+    object->inertia = 0.0f;
+
+    if(!object->is_static) {
+        // compute mass and inertia from density and size
+        if(object->type == P2D_OBJECT_RECTANGLE) {
+            // printf("object density: %f\n", object->density);
+            object->mass = object->density * (object->rectangle.width * object->rectangle.height);
+
+            // scale mass for simulation:
+            object->mass *= 0.01f;
+
+            object->inertia = (1.0f / 12.0f) * object->mass * ((object->rectangle.width * object->rectangle.width) + (object->rectangle.height * object->rectangle.height));
+
+            // scale inertia for simulation:
+            object->inertia *= 0.00005f;
+        }
+        else if(object->type == P2D_OBJECT_CIRCLE) {
+            // printf("object density: %f\n", object->density);
+            object->mass = object->density * M_PI * object->circle.radius * object->circle.radius;
+
+            // scale mass for simulation:
+            object->mass *= 0.01f;
+
+            object->inertia = (1.0f / 2.0f) * object->mass * object->circle.radius * object->circle.radius;
+
+            // scale inertia for simulation:
+            object->inertia *= 0.00005f;
+        }
+    }
+
+    // printf("object mass: %f\n", object->mass);
+    // printf("object inertia: %f\n", object->inertia);
+
     p2d_state.p2d_object_count++;
     return true;
 }
@@ -269,6 +303,10 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
 void p2d_step(float delta_time) {
     // struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
 
+    if(p2d_state.out_contacts) {
+        p2d_contact_list_clear(p2d_state.out_contacts);
+    }
+
     // substepping
     for(int it_track = 0; it_track < p2d_state._substeps; it_track++) {
 
@@ -343,9 +381,11 @@ void p2d_step(float delta_time) {
                         p2d_state.p2d_contacts_found += (int)contacts->count;
 
                         // debug: add all contacts to the global list
-                        // for(size_t z = 0; z < contacts->count; z++) {
-                        //     p2d_contact_list_add(every_contact, contacts->contacts[z]);
-                        // }
+                        if(p2d_state.out_contacts) {
+                            for(size_t z = 0; z < contacts->count; z++) {
+                                p2d_contact_list_add(p2d_state.out_contacts, contacts->contacts[z]);
+                            }
+                        }
 
                         // create contact manifold for resolution
                         struct p2d_collision_manifold manifold =

@@ -64,6 +64,9 @@ struct p2d_state {
     int p2d_contact_checks;
     int p2d_contacts_found;
     int p2d_collision_pairs;
+
+    // optional
+    struct p2d_contact_list *out_contacts; // will be populated and cleared assuming user has filled this. user must free it themselves
 };
 extern struct p2d_state p2d_state;
 
@@ -103,8 +106,13 @@ struct p2d_object {
     };
 
     // physical properties
-    float mass;
+    float density;
+
+    float mass; // TODO: auto calc mass from density?
     float restitution;
+
+    // computed physical properties
+    float inertia; // automatically calculated?
 
     /*
         User data, useful for things like identifying this object in an

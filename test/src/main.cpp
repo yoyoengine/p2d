@@ -69,15 +69,15 @@ void draw_object(SDL_Renderer* renderer, p2d_object* object) {
     struct p2d_aabb aabb = p2d_get_aabb(object);
     struct p2d_obb obb = p2d_get_obb(object);
     
-    // draw the aabb
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_FRect fr = {
-        .x = aabb.x,
-        .y = aabb.y,
-        .w = aabb.w,
-        .h = aabb.h,
-    };
-    SDL_RenderRect(renderer, &fr);
+    // // draw the aabb
+    // SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    // SDL_FRect fr = {
+    //     .x = aabb.x,
+    //     .y = aabb.y,
+    //     .w = aabb.w,
+    //     .h = aabb.h,
+    // };
+    // SDL_RenderRect(renderer, &fr);
 
     if(object->type == P2D_OBJECT_RECTANGLE) {
         struct p2d_obb_verts verts = p2d_obb_to_verts(obb);
@@ -132,8 +132,10 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .mass = .001,
-        .restitution = 0.9,
+        .density = 0.1,
+        .mass = 3,
+        .restitution = 0.6,
+        .inertia = 0.5,
     });
     objects.push_back(obj);
 
@@ -150,8 +152,11 @@ void spawn_rect(int x, int y) {
             .width = 100,
             .height = 100,
         },
-        .mass = .5,
-        .restitution = 0.5,
+        // .density = 20,
+        .density = .1,
+        // .mass = 5,
+        .restitution = 1,
+        // .inertia = 0.5,
     });
     objects.push_back(obj);
 
@@ -200,8 +205,10 @@ int main(int argc, char** argv) {
             .width = 1800,
             .height = 40,
         },
+        .density = 0.1,
         .mass = 10,
-        .restitution = 0.5,
+        .restitution = .5,
+        .inertia = 0.5,
     });
     objects.push_back(obj);
     p2d_create_object(obj.get());
@@ -218,8 +225,10 @@ int main(int argc, char** argv) {
         .circle= {
             .radius = 150,
         },
+        .density = 0.1,
         .mass = 10,
-        .restitution = 0.5,
+        .restitution = .5,
+        .inertia = 0.5,
     });
     objects.push_back(a);
     p2d_create_object(a.get());
@@ -238,9 +247,10 @@ int main(int argc, char** argv) {
     SDL_SetRenderVSync(renderer, 1);
     int last_frame_time = SDL_GetTicks();
 
-    struct p2d_contact_list *last_contacts = NULL;
+    struct p2d_contact_list *last_contacts = p2d_contact_list_create(25);
+    p2d_state.out_contacts = last_contacts;
 
-    p2d_state.gravity = (vec2_t){.x = 0, .y = 9.8f};
+    p2d_state.gravity = (vec2_t){.x = 0, .y = 100.0f};
 
     while(1) {
         int time = SDL_GetTicks();
@@ -292,7 +302,7 @@ int main(int argc, char** argv) {
         // printf("delta_time: %f\n", delta_time);
         
         if(!paused || single_setp) {
-            p2d_contact_list_destroy(last_contacts);
+            // p2d_contact_list_destroy(last_contacts);
 
             // last_contacts = p2d_step(delta_time);
             p2d_step(delta_time);
@@ -300,24 +310,24 @@ int main(int argc, char** argv) {
 
         // TODO: better alternative for accessing debug like this is set flag in state and read from field that gets internally mem managed
 
-        // // display the contact poitns on screen
-        // for(int i = 0; i < last_contacts->count; i++) {
-        //     struct p2d_contact contact = last_contacts->contacts[i];
-        //     SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+        // display the contact poitns on screen
+        for(int i = 0; i < last_contacts->count; i++) {
+            struct p2d_contact contact = last_contacts->contacts[i];
+            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
             
 
-        //     // larger rect to be more visible
-        //     SDL_FRect fr = {
-        //         .x = contact.contact_point.x - 5,
-        //         .y = contact.contact_point.y - 5,
-        //         .w = 10,
-        //         .h = 10,
-        //     };
-        //     SDL_RenderRect(renderer, &fr);
+            // larger rect to be more visible
+            SDL_FRect fr = {
+                .x = contact.contact_point.x - 5,
+                .y = contact.contact_point.y - 5,
+                .w = 10,
+                .h = 10,
+            };
+            SDL_RenderRect(renderer, &fr);
 
-        //     // draw the normal with proper magnitude given by penetration
-        //     SDL_RenderLine(renderer, contact.contact_point.x + contact.contact_normal.x * contact.penetration, contact.contact_point.y + contact.contact_normal.y * contact.penetration, contact.contact_point.x, contact.contact_point.y);
-        // }
+            // draw the normal with proper magnitude given by penetration
+            SDL_RenderLine(renderer, contact.contact_point.x + contact.contact_normal.x * contact.penetration, contact.contact_point.y + contact.contact_normal.y * contact.penetration, contact.contact_point.x, contact.contact_point.y);
+        }
 
         // // draw lines to divide tiles by specified size
         // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

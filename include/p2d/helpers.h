@@ -41,4 +41,8 @@ P2D_API void p2d_project_circle_to_axis(vec2_t center, float radius, vec2_t axis
 // returns obb verts index of closest vert
 P2D_API int p2d_closest_circle_point_on_rect(vec2_t circle_center, struct p2d_obb_verts verts);
 
+P2D_API float p2d_inv_mass(struct p2d_object *obj);
+
+P2D_API float p2d_inv_inertia(struct p2d_object *obj);
+
 #endif // P2D_HELPERS_H
