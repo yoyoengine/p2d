@@ -91,6 +91,10 @@ void draw_object(SDL_Renderer* renderer, p2d_object* object) {
     else if(object->type == P2D_OBJECT_CIRCLE) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         _draw_circle(renderer, object->x, object->y, object->circle.radius);
+
+        float end_x = object->x + (object->circle.radius * cosf(object->rotation));
+        float end_y = object->y + (object->circle.radius * sinf(object->rotation));
+        SDL_RenderLine(renderer, object->x, object->y, end_x, end_y);
     }
 }
 
@@ -132,10 +136,10 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .density = 0.1,
-        .mass = 3,
+        .density = 1,
+        // .mass = 3,
         .restitution = 0.6,
-        .inertia = 0.5,
+        // .inertia = 0.5,
     });
     objects.push_back(obj);
 
@@ -153,9 +157,9 @@ void spawn_rect(int x, int y) {
             .height = 100,
         },
         // .density = 20,
-        .density = .1,
+        .density = 1,
         // .mass = 5,
-        .restitution = 1,
+        .restitution = .6,
         // .inertia = 0.5,
     });
     objects.push_back(obj);
@@ -234,7 +238,8 @@ int main(int argc, char** argv) {
     p2d_create_object(a.get());
 
     int tile_size = 100;
-    int iterations = 20;
+    // int iterations = 20;
+    int iterations = 1;
 
     if(!p2d_init(tile_size, iterations, collision_callback, trigger_callback, log_wrapper)) {
         printf("p2d_init failed\n");
@@ -250,7 +255,7 @@ int main(int argc, char** argv) {
     struct p2d_contact_list *last_contacts = p2d_contact_list_create(25);
     p2d_state.out_contacts = last_contacts;
 
-    p2d_state.gravity = (vec2_t){.x = 0, .y = 100.0f};
+    p2d_state.gravity = (vec2_t){.x = 0, .y = 50.0f};
 
     while(1) {
         int time = SDL_GetTicks();

@@ -26,6 +26,17 @@
 #endif
 
 /*
+    Densities: g/cm^3
+*/
+#ifndef P2D_MIN_DENSITY
+    #define P2D_MIN_DENSITY 0.5f
+#endif
+
+#ifndef P2D_MAX_DENSITY
+    #define P2D_MAX_DENSITY 21.4f
+#endif
+
+/*
     How callbacks and resolutions work:
 
     Engine will call p2d_step() every frame.
@@ -113,6 +124,11 @@ struct p2d_object {
 
     // computed physical properties
     float inertia; // automatically calculated?
+
+    // real computed
+    float inv_mass;
+    float inv_inertia;
+    float area;
 
     /*
         User data, useful for things like identifying this object in an

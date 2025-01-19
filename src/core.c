@@ -166,36 +166,34 @@ bool p2d_create_object(struct p2d_object *object) {
     object->mass = 0.0f;
     object->inertia = 0.0f;
 
+    if(object->density < P2D_MIN_DENSITY || object->density > P2D_MAX_DENSITY) {
+        p2d_logf(P2D_LOG_WARN, "p2d_create_object: object density is out of range.\n");
+        object->density = 1.0f;
+    }
+
+    switch(object->type) {
+        case P2D_OBJECT_RECTANGLE:
+            object->area = object->rectangle.width * object->rectangle.height;
+            break;
+        case P2D_OBJECT_CIRCLE:
+            object->area = M_PI * object->circle.radius * object->circle.radius;
+            break;
+    }
+
     if(!object->is_static) {
         // compute mass and inertia from density and size
         if(object->type == P2D_OBJECT_RECTANGLE) {
-            // printf("object density: %f\n", object->density);
-            object->mass = object->density * (object->rectangle.width * object->rectangle.height);
-
-            // scale mass for simulation:
-            object->mass *= 0.01f;
-
+            object->mass = object->density * object->area;
             object->inertia = (1.0f / 12.0f) * object->mass * ((object->rectangle.width * object->rectangle.width) + (object->rectangle.height * object->rectangle.height));
-
-            // scale inertia for simulation:
-            object->inertia *= 0.00005f;
         }
         else if(object->type == P2D_OBJECT_CIRCLE) {
-            // printf("object density: %f\n", object->density);
-            object->mass = object->density * M_PI * object->circle.radius * object->circle.radius;
-
-            // scale mass for simulation:
-            object->mass *= 0.01f;
-
+            object->mass = object->density * object->area;
             object->inertia = (1.0f / 2.0f) * object->mass * object->circle.radius * object->circle.radius;
-
-            // scale inertia for simulation:
-            object->inertia *= 0.00005f;
         }
     }
 
-    // printf("object mass: %f\n", object->mass);
-    // printf("object inertia: %f\n", object->inertia);
+    object->inv_mass = (object->mass > 0.0f) ? 1.0f / object->mass : 0.0f;
+    object->inv_inertia = (object->inertia > 0.0f) ? 1.0f / object->inertia : 0.0f;
 
     p2d_state.p2d_object_count++;
     return true;

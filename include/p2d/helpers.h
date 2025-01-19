@@ -45,4 +45,6 @@ P2D_API float p2d_inv_mass(struct p2d_object *obj);
 
 P2D_API float p2d_inv_inertia(struct p2d_object *obj);
 
+P2D_API float p2d_clampf(float value, float min, float max);
+
 #endif // P2D_HELPERS_H
