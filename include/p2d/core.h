@@ -109,10 +109,17 @@ struct p2d_object {
         struct {
             float width;
             float height;
+
+            // COMPUTED //
+            float width_meters;
+            float height_meters;
         } rectangle;
 
         struct {
             float radius;
+
+            // COMPUTED //
+            float radius_meters;
         } circle;
     };
 
@@ -123,6 +130,9 @@ struct p2d_object {
     float restitution;
 
     // computed physical properties
+    
+    // 1m = 100 pixels
+
     float inertia; // automatically calculated?
 
     // real computed
@@ -143,6 +153,11 @@ struct p2d_object {
     float * out_x;
     float * out_y;
     float * out_rotation;
+
+    /*
+        Debug Optionals
+    */
+    
 };
 
 struct p2d_collision_manifold {

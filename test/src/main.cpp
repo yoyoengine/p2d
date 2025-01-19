@@ -136,7 +136,7 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .density = 1,
+        .density = 10,
         // .mass = 3,
         .restitution = 0.6,
         // .inertia = 0.5,
@@ -157,7 +157,7 @@ void spawn_rect(int x, int y) {
             .height = 100,
         },
         // .density = 20,
-        .density = 1,
+        .density = 10,
         // .mass = 5,
         .restitution = .6,
         // .inertia = 0.5,

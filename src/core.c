@@ -173,10 +173,15 @@ bool p2d_create_object(struct p2d_object *object) {
 
     switch(object->type) {
         case P2D_OBJECT_RECTANGLE:
-            object->area = object->rectangle.width * object->rectangle.height;
+            object->rectangle.width_meters = object->rectangle.width / 100.0f;
+            object->rectangle.height_meters = object->rectangle.height / 100.0f;
+
+            object->area = object->rectangle.width_meters * object->rectangle.height_meters;
             break;
         case P2D_OBJECT_CIRCLE:
-            object->area = M_PI * object->circle.radius * object->circle.radius;
+            object->circle.radius_meters = object->circle.radius / 100.0f;
+
+            object->area = M_PI * object->circle.radius_meters * object->circle.radius_meters;
             break;
     }
 
@@ -184,11 +189,11 @@ bool p2d_create_object(struct p2d_object *object) {
         // compute mass and inertia from density and size
         if(object->type == P2D_OBJECT_RECTANGLE) {
             object->mass = object->density * object->area;
-            object->inertia = (1.0f / 12.0f) * object->mass * ((object->rectangle.width * object->rectangle.width) + (object->rectangle.height * object->rectangle.height));
+            object->inertia = (1.0f / 12.0f) * object->mass * ((object->rectangle.width_meters * object->rectangle.width_meters) + (object->rectangle.height_meters * object->rectangle.height_meters));
         }
         else if(object->type == P2D_OBJECT_CIRCLE) {
             object->mass = object->density * object->area;
-            object->inertia = (1.0f / 2.0f) * object->mass * object->circle.radius * object->circle.radius;
+            object->inertia = (1.0f / 2.0f) * object->mass * object->circle.radius_meters * object->circle.radius_meters;
         }
     }
 
