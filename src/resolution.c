@@ -99,6 +99,14 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
     vec2_t ra_list[2] = {{{0,0}},{{0,0}}};
     vec2_t rb_list[2] = {{{0,0}},{{0,0}}};
 
+    // print a load of details from this resolution
+    printf("normal: %f, %f\n", normal.x, normal.y);
+    printf("contact count: %d\n", contact_count);
+    printf("mass a: %f inv: %f\n", obj_a->mass, obj_a->inv_mass);
+    printf("mass b: %f inv: %f\n", obj_b->mass, obj_b->inv_mass);
+    printf("inertia a: %f inv: %f\n", obj_a->inertia, obj_a->inv_inertia);
+    printf("inertia b: %f inv: %f\n", obj_b->inertia, obj_b->inv_inertia);
+
     for(int i = 0; i < contact_count; i++) {
         vec2_t cent_a = p2d_object_center(obj_a);
         vec2_t cent_b = p2d_object_center(obj_b);
@@ -126,18 +134,57 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         }
 
         float ra_perp_dot_n = lla_vec2_dot(ra_perp, normal);
+        float ra_perp_dot_n_squared = ra_perp_dot_n * ra_perp_dot_n;
         float rb_perp_dot_n = lla_vec2_dot(rb_perp, normal);
+        float rb_perp_dot_n_squared = rb_perp_dot_n * rb_perp_dot_n;
 
-        float denom = obj_a->inv_mass + obj_b->inv_mass +
-        (ra_perp_dot_n * ra_perp_dot_n) * obj_a->inv_inertia +
-        (rb_perp_dot_n * rb_perp_dot_n) * obj_b->inv_inertia;
+        float rapdn_squared_times_iv = ra_perp_dot_n_squared * obj_a->inv_inertia;
+        float rbpdn_squared_times_iv = rb_perp_dot_n_squared * obj_b->inv_inertia;
 
-        float j = -(1.0f + e) * contact_velocity_mag;
-        j /= denom;
+        printf("rapdn_squared_times_iv: %f\n", rapdn_squared_times_iv);
+        printf("rbpdn_squared_times_iv: %f\n", rbpdn_squared_times_iv);
+
+        float denom_right = rapdn_squared_times_iv + rbpdn_squared_times_iv;
+        
+        float added_inv_masses = obj_a->inv_mass + obj_b->inv_mass;
+        vec2_t norm_scaled_mass = lla_vec2_scale(normal, added_inv_masses);
+        float denom_left = lla_vec2_dot(normal, norm_scaled_mass);
+
+        float denom = denom_left + denom_right;
+
+        float numerator = -(1.0f + e) * contact_velocity_mag;
+
+        printf("denom left: %f\n", denom_left);
+        printf("denom right: %f\n", denom_right);
+        printf("denom: %f\n", denom);
+
+        printf("numerator: %f\n", numerator);
+
+        float j = numerator / denom;
+
+        float imp = j / obj_a->mass;
         j /= (float)contact_count;
 
-        vec2_t impulse = lla_vec2_scale(normal, j);
+        vec2_t impulse = lla_vec2_scale(normal, imp);
+
         impulse_list[i] = impulse;
+
+        // no angular, yet
+
+        printf("contact %d:\n", i);
+        printf("   ra: %f, %f\n", ra.x, ra.y);
+        printf("   rb: %f, %f\n", rb.x, rb.y);
+        printf("   ra_perp: %f, %f\n", ra_perp.x, ra_perp.y);
+        printf("   rb_perp: %f, %f\n", rb_perp.x, rb_perp.y);
+        printf("   angular_linear_velocity_a: %f, %f\n", angular_linear_velocity_a.x, angular_linear_velocity_a.y);
+        printf("   angular_linear_velocity_b: %f, %f\n", angular_linear_velocity_b.x, angular_linear_velocity_b.y);
+        printf("   relative_velocity: %f, %f\n", relative_velocity.x, relative_velocity.y);
+        printf("   contact_velocity_mag: %f\n", contact_velocity_mag);
+        printf("   ra_perp_dot_n: %f\n", ra_perp_dot_n);
+        printf("   rb_perp_dot_n: %f\n", rb_perp_dot_n);
+        printf("   denom: %f\n", denom);
+        printf("   j: %f\n", j);
+        printf("   impulse: %f, %f\n", impulse.x, impulse.y);
     }
 
     for(int i = 0; i < contact_count; i++) {
@@ -145,15 +192,16 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         vec2_t ra = ra_list[i];
         vec2_t rb = rb_list[i];
 
+        printf("applying impulse %d\n", i);
 
-        vec2_t a_lin_vel_delta = lla_vec2_scale(lla_vec2_scale(impulse, -1.0f), obj_a->inv_mass);
+        vec2_t a_lin_vel_delta = lla_vec2_scale(impulse, -1.0f);
         obj_a->vx += a_lin_vel_delta.x;
         obj_a->vy += a_lin_vel_delta.y;
 
-        float a_ang_vel_delta = -1.0f * lla_vec2_cross(ra, impulse) * obj_a->inv_inertia;
-        obj_a->vr += a_ang_vel_delta;
+        float a_ang_vel_delta = lla_vec2_cross(ra, impulse) * obj_a->inv_inertia;
+        obj_a->vr -= a_ang_vel_delta;
 
-        vec2_t b_lin_vel_delta = lla_vec2_scale(impulse, p2d_inv_mass(obj_b));
+        vec2_t b_lin_vel_delta = lla_vec2_scale(impulse, obj_b->inv_mass);
         obj_b->vx += b_lin_vel_delta.x;
         obj_b->vy += b_lin_vel_delta.y;
 
@@ -163,6 +211,10 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
 }
 
 void p2d_resolve_collision(struct p2d_collision_manifold *manifold) {
-    _p2d_basic_resolution(manifold);
-    // _p2d_rotational_resolution(manifold);
+    printf("velocity before resolution: %f, %f, %f\n", manifold->a->vx, manifold->a->vy, manifold->a->vr);
+
+    // _p2d_basic_resolution(manifold);
+    _p2d_rotational_resolution(manifold);
+
+    printf("resolved velocity: %f, %f, %f\n", manifold->a->vx, manifold->a->vy, manifold->a->vr);
 }

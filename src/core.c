@@ -171,15 +171,23 @@ bool p2d_create_object(struct p2d_object *object) {
         object->density = 1.0f;
     }
 
+    /*
+        WARNING: DO NOT TOUCH THIS. ITS COMPLETELY BROKEN BECAUSE WE WOULD
+        NEED TO ALSO SCALE IMPULSES
+    */
+    #ifndef P2D_PIXELS_PER_METER
+        #define P2D_PIXELS_PER_METER 1.0f
+    #endif
+
     switch(object->type) {
         case P2D_OBJECT_RECTANGLE:
-            object->rectangle.width_meters = object->rectangle.width / 100.0f;
-            object->rectangle.height_meters = object->rectangle.height / 100.0f;
+            object->rectangle.width_meters = object->rectangle.width / P2D_PIXELS_PER_METER;
+            object->rectangle.height_meters = object->rectangle.height / P2D_PIXELS_PER_METER;
 
             object->area = object->rectangle.width_meters * object->rectangle.height_meters;
             break;
         case P2D_OBJECT_CIRCLE:
-            object->circle.radius_meters = object->circle.radius / 100.0f;
+            object->circle.radius_meters = object->circle.radius / P2D_PIXELS_PER_METER;
 
             object->area = M_PI * object->circle.radius_meters * object->circle.radius_meters;
             break;
@@ -199,6 +207,9 @@ bool p2d_create_object(struct p2d_object *object) {
 
     object->inv_mass = (object->mass > 0.0f) ? 1.0f / object->mass : 0.0f;
     object->inv_inertia = (object->inertia > 0.0f) ? 1.0f / object->inertia : 0.0f;
+
+    printf("object %p: mass: %f, inertia: %f\n", (void *)object, object->mass, object->inertia);
+    printf("object %p: inv_mass: %f, inv_inertia: %f\n", (void *)object, object->inv_mass, object->inv_inertia);
 
     p2d_state.p2d_object_count++;
     return true;

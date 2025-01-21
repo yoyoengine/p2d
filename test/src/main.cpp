@@ -152,6 +152,7 @@ void spawn_rect(int x, int y) {
         .is_static = false,
         .x = (float)x,
         .y = (float)y,
+        // .rotation = 45,
         .rectangle = {
             .width = 100,
             .height = 100,
@@ -216,6 +217,30 @@ int main(int argc, char** argv) {
     });
     objects.push_back(obj);
     p2d_create_object(obj.get());
+
+    auto b = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 1300,
+        .y = 600,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        .vx = 0,
+        .vy = 0,
+        .vr = 0,
+        // .rotation = 45,
+        .rectangle = {
+            .width = 200,
+            .height = 200,
+        },
+        .density = 0.1,
+        // .mass = 10,
+        .restitution = .5,
+        // .inertia = 0.5,
+    });
+    objects.push_back(b);
+    p2d_create_object(b.get());
 
     auto a = std::make_shared<p2d_object>(p2d_object{
         .type = P2D_OBJECT_CIRCLE,
