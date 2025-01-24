@@ -136,7 +136,8 @@ void spawn_circle(int x, int y) {
         .circle = {
             .radius = 50,
         },
-        .density = 10,
+        // .density = 0.5f,
+        .density = 10.0f,
         // .mass = 3,
         .restitution = 0.6,
         // .inertia = 0.5,
@@ -158,7 +159,8 @@ void spawn_rect(int x, int y) {
             .height = 100,
         },
         // .density = 20,
-        .density = 10,
+        // .density = 0.5f,
+        .density = 10.0f,
         // .mass = 5,
         .restitution = .6,
         // .inertia = 0.5,
@@ -210,7 +212,7 @@ int main(int argc, char** argv) {
             .width = 1800,
             .height = 40,
         },
-        .density = 0.1,
+        .density = 1,
         .mass = 10,
         .restitution = .5,
         .inertia = 0.5,
@@ -234,7 +236,7 @@ int main(int argc, char** argv) {
             .width = 200,
             .height = 200,
         },
-        .density = 0.1,
+        .density = 1,
         // .mass = 10,
         .restitution = .5,
         // .inertia = 0.5,
@@ -254,7 +256,7 @@ int main(int argc, char** argv) {
         .circle= {
             .radius = 150,
         },
-        .density = 0.1,
+        .density = 1,
         .mass = 10,
         .restitution = .5,
         .inertia = 0.5,
@@ -280,7 +282,7 @@ int main(int argc, char** argv) {
     struct p2d_contact_list *last_contacts = p2d_contact_list_create(25);
     p2d_state.out_contacts = last_contacts;
 
-    p2d_state.gravity = (vec2_t){.x = 0, .y = 50.0f};
+    p2d_state.gravity = (vec2_t){.x = 0, .y = 30.0f};
 
     while(1) {
         int time = SDL_GetTicks();

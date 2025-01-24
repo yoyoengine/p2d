@@ -162,7 +162,7 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
 
         float j = numerator / denom;
 
-        float imp = j / obj_a->mass;
+        float imp = j * obj_a->inv_mass;
         j /= (float)contact_count;
 
         vec2_t impulse = lla_vec2_scale(normal, imp);
@@ -198,15 +198,43 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         obj_a->vx += a_lin_vel_delta.x;
         obj_a->vy += a_lin_vel_delta.y;
 
-        float a_ang_vel_delta = lla_vec2_cross(ra, impulse) * obj_a->inv_inertia;
+        /*
+            One way of handling the screen to cartesian in the dot/cross
+
+            The 2bit way is object_a_rot - impl, object_b_rot - impl
+        */
+        // vec2_t tmp_ra = (vec2_t){{ra.x, -ra.y}};
+        // vec2_t tmp_rb = (vec2_t){{rb.x, -rb.y}};
+        // vec2_t tmp_impulse = (vec2_t){{impulse.x, -impulse.y}};
+
+        float a_ang_vel_delta = lla_vec2_cross(ra, impulse);
+        printf("a_ang_vel_delta cross: %f\n", a_ang_vel_delta);
+        a_ang_vel_delta *= obj_a->inv_inertia;
+
+        // compiler will optimize
+        float c = 180.0f / M_PI;
+
+        // radians -> degrees
+        a_ang_vel_delta *= c;
+
         obj_a->vr -= a_ang_vel_delta;
+
+        printf("a_ang_vel_delta scaled by ii: %f\n", a_ang_vel_delta);
 
         vec2_t b_lin_vel_delta = lla_vec2_scale(impulse, obj_b->inv_mass);
         obj_b->vx += b_lin_vel_delta.x;
         obj_b->vy += b_lin_vel_delta.y;
 
-        float b_ang_vel_delta = lla_vec2_cross(rb, impulse) * obj_b->inv_inertia;
+        float b_ang_vel_delta = lla_vec2_cross(rb, impulse);
+        printf("b_ang_vel_delta cross: %f\n", b_ang_vel_delta);
+        b_ang_vel_delta *= obj_b->inv_inertia;
+
+        // radians -> degrees
+        b_ang_vel_delta *= c;
+
         obj_b->vr += b_ang_vel_delta;
+
+        printf("b_ang_vel_delta scaled by ii: %f\n", b_ang_vel_delta);
     }
 }
 
