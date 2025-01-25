@@ -29,11 +29,15 @@
     Densities: g/cm^3
 */
 #ifndef P2D_MIN_DENSITY
-    #define P2D_MIN_DENSITY 0.5f
+    #define P2D_MIN_DENSITY 0.25f
 #endif
 
 #ifndef P2D_MAX_DENSITY
-    #define P2D_MAX_DENSITY 21.4f
+    #define P2D_MAX_DENSITY 20.0f
+#endif
+
+#ifndef P2D_DEFAULT_MASS_SCALE
+    #define P2D_DEFAULT_MASS_SCALE 0.00015f
 #endif
 
 /*
@@ -56,13 +60,14 @@ struct p2d_cb_data {
     particularly for visualization and debug overlays.
 */
 struct p2d_state {
-    // config
-    // passed on init
-    int _cell_size;
-    int _substeps;
 
-    // init
-    vec2_t gravity;
+    /*
+        Runtime Parameters
+    */
+    int     p2d_cell_size;
+    int     p2d_substeps;
+    vec2_t  p2d_gravity;
+    float   p2d_mass_scaling;
 
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);

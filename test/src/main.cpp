@@ -158,8 +158,8 @@ void spawn_rect(int x, int y) {
             .width = 100,
             .height = 100,
         },
-        // .density = 20,
         // .density = 0.5f,
+        // .density = 0.25f,
         .density = 10.0f,
         // .mass = 5,
         .restitution = .6,
@@ -257,12 +257,86 @@ int main(int argc, char** argv) {
             .radius = 150,
         },
         .density = 1,
-        .mass = 10,
         .restitution = .5,
-        .inertia = 0.5,
     });
     objects.push_back(a);
     p2d_create_object(a.get());
+
+    auto z = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 0,
+        .y = 0,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 500,
+            .height = 50,
+        },
+        .density = 1,
+        .restitution = .5,
+    });
+    objects.push_back(z);
+    p2d_create_object(z.get());
+
+    auto y = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 0,
+        .y = 500,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 500,
+            .height = 50,
+        },
+        .density = 1,
+        .restitution = .5,
+    });
+    objects.push_back(y);
+    p2d_create_object(y.get());
+
+    auto n = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 0,
+        .y = 0,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 50,
+            .height = 500,
+        },
+        .density = 1,
+        .restitution = .5,
+    });
+    objects.push_back(n);
+    p2d_create_object(n.get());
+
+    auto x = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 500,
+        .y = 0,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 50,
+            .height = 500,
+        },
+        .density = 1,
+        .restitution = .5,
+    });
+    objects.push_back(x);
+    p2d_create_object(x.get());
 
     int tile_size = 100;
     // int iterations = 20;
@@ -282,7 +356,7 @@ int main(int argc, char** argv) {
     struct p2d_contact_list *last_contacts = p2d_contact_list_create(25);
     p2d_state.out_contacts = last_contacts;
 
-    p2d_state.gravity = (vec2_t){.x = 0, .y = 30.0f};
+    p2d_state.p2d_gravity = (vec2_t){.x = 0, .y = 30.0f};
 
     while(1) {
         int time = SDL_GetTicks();
@@ -381,18 +455,18 @@ int main(int argc, char** argv) {
 
         //     struct p2d_aabb aabb = p2d_get_aabb(object);
     
-        //     int start_tile_x = aabb.x / p2d_state._cell_size;
-        //     int start_tile_y = aabb.y / p2d_state._cell_size;
-        //     int end_tile_x = (aabb.x + aabb.w) / p2d_state._cell_size;
-        //     int end_tile_y = (aabb.y + aabb.h) / p2d_state._cell_size;
+        //     int start_tile_x = aabb.x / p2d_state.p2d_cell_size;
+        //     int start_tile_y = aabb.y / p2d_state.p2d_cell_size;
+        //     int end_tile_x = (aabb.x + aabb.w) / p2d_state.p2d_cell_size;
+        //     int end_tile_y = (aabb.y + aabb.h) / p2d_state.p2d_cell_size;
 
         //     for (int tile_x = start_tile_x; tile_x <= end_tile_x; tile_x++) {
         //         for (int tile_y = start_tile_y; tile_y <= end_tile_y; tile_y++) {
         //             struct p2d_aabb tile = {
-        //                 .x = tile_x * p2d_state._cell_size,
-        //                 .y = tile_y * p2d_state._cell_size,
-        //                 .w = p2d_state._cell_size,
-        //                 .h = p2d_state._cell_size
+        //                 .x = tile_x * p2d_state.p2d_cell_size,
+        //                 .y = tile_y * p2d_state.p2d_cell_size,
+        //                 .w = p2d_state.p2d_cell_size,
+        //                 .h = p2d_state.p2d_cell_size
         //             };
                     
         //             SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);

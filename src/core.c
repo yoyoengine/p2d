@@ -27,6 +27,8 @@ struct p2d_state p2d_state = {0};
 // INIT
 //
 
+// gravity needs initialized by game, mass scaling also can be overridden
+
 bool p2d_init(
     int cell_size,
     int substeps,
@@ -41,13 +43,15 @@ bool p2d_init(
         p2d_logf(P2D_LOG_ERROR, "p2d_init: cell_size must be greater than 0.\n");
         return false;
     }
-    p2d_state._cell_size = cell_size;
+    p2d_state.p2d_cell_size = cell_size;
 
     if(substeps <= 0) {
         p2d_logf(P2D_LOG_ERROR, "p2d_init: substeps must be greater than 0.\n");
         return false;
     }
-    p2d_state._substeps = substeps;
+    p2d_state.p2d_substeps = substeps;
+
+    p2d_state.p2d_mass_scaling = P2D_DEFAULT_MASS_SCALE;
 
     if(!on_collision) {
         p2d_logf(P2D_LOG_WARN, "p2d_init: on_collision is NULL.\n");
@@ -109,18 +113,18 @@ void p2d_for_each_intersecting_tile(struct p2d_object *object, void (*callback)(
 
     struct p2d_aabb aabb = p2d_get_aabb(object);
     
-    int start_tile_x = (int)(aabb.x / p2d_state._cell_size);
-    int start_tile_y = (int)(aabb.y / p2d_state._cell_size);
-    int end_tile_x = (int)((aabb.x + aabb.w) / p2d_state._cell_size);
-    int end_tile_y = (int)((aabb.y + aabb.h) / p2d_state._cell_size);
+    int start_tile_x = (int)(aabb.x / p2d_state.p2d_cell_size);
+    int start_tile_y = (int)(aabb.y / p2d_state.p2d_cell_size);
+    int end_tile_x = (int)((aabb.x + aabb.w) / p2d_state.p2d_cell_size);
+    int end_tile_y = (int)((aabb.y + aabb.h) / p2d_state.p2d_cell_size);
 
     for (int tile_x = start_tile_x; tile_x <= end_tile_x; tile_x++) {
         for (int tile_y = start_tile_y; tile_y <= end_tile_y; tile_y++) {
             struct p2d_aabb tile = {
-                .x = (float)(tile_x * p2d_state._cell_size),
-                .y = (float)(tile_y * p2d_state._cell_size),
-                .w = (float)p2d_state._cell_size,
-                .h = (float)p2d_state._cell_size
+                .x = (float)(tile_x * p2d_state.p2d_cell_size),
+                .y = (float)(tile_y * p2d_state.p2d_cell_size),
+                .w = (float)p2d_state.p2d_cell_size,
+                .h = (float)p2d_state.p2d_cell_size
             };
 
             if (_object_intersects_tile(object, tile)) {
@@ -168,12 +172,10 @@ bool p2d_create_object(struct p2d_object *object) {
 
     if(object->density < P2D_MIN_DENSITY || object->density > P2D_MAX_DENSITY) {
         p2d_logf(P2D_LOG_WARN, "p2d_create_object: object density is out of range.\n");
-        object->density = 1.0f;
     }
 
     /*
-        WARNING: DO NOT TOUCH THIS. ITS COMPLETELY BROKEN BECAUSE WE WOULD
-        NEED TO ALSO SCALE IMPULSES
+        UNUSED (for now?)
     */
     #ifndef P2D_PIXELS_PER_METER
         #define P2D_PIXELS_PER_METER 1.0f
@@ -193,14 +195,18 @@ bool p2d_create_object(struct p2d_object *object) {
             break;
     }
 
+    float mass_scaling = 0.00015f;
+
     if(!object->is_static) {
         // compute mass and inertia from density and size
         if(object->type == P2D_OBJECT_RECTANGLE) {
             object->mass = object->density * object->area;
+            object->mass *= mass_scaling;
             object->inertia = (1.0f / 12.0f) * object->mass * ((object->rectangle.width_meters * object->rectangle.width_meters) + (object->rectangle.height_meters * object->rectangle.height_meters));
         }
         else if(object->type == P2D_OBJECT_CIRCLE) {
             object->mass = object->density * object->area;
+            object->mass *= mass_scaling;
             object->inertia = (1.0f / 2.0f) * object->mass * object->circle.radius_meters * object->circle.radius_meters;
         }
     }
@@ -322,7 +328,7 @@ void p2d_step(float delta_time) {
     }
 
     // substepping
-    for(int it_track = 0; it_track < p2d_state._substeps; it_track++) {
+    for(int it_track = 0; it_track < p2d_state.p2d_substeps; it_track++) {
 
     /*
         Step each object in the world
@@ -332,7 +338,7 @@ void p2d_step(float delta_time) {
         if(object == NULL) {
             continue;
         }
-        p2d_object_step(object, delta_time, p2d_state._substeps);
+        p2d_object_step(object, delta_time, p2d_state.p2d_substeps);
     }
 
     /*

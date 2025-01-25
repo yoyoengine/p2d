@@ -62,8 +62,10 @@ p2d_shutdown();
 | Item                | Description                                 | Priority | Progress        |
 |---------------------|---------------------------------------------|----------|-----------------|
 | Debug Resolution    | The current basic resolution has edge cases | High     | Done            |
-| Rotation Resolution | Implement rotation and torque               | High     | In Progress     |
-| Advanced Gravity    | Allow seperate spatial fields of gravity    | Medium   | Maybe Later     |
+| Rotation Resolution | Implement rotation and torque               | High     | Done            |
+| Friction Resolution | Implement friction                          | High     | In Progress     |
+| Joints              | Constraints between objects                 | High     | Planned         |
+| Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
 

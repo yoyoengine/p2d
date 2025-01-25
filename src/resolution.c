@@ -26,8 +26,8 @@ void p2d_object_step(struct p2d_object *object, float delta_time, int iterations
     delta_time /= (float)iterations;
 
     // apply gravity
-    object->vx += p2d_state.gravity.x * delta_time;
-    object->vy += p2d_state.gravity.y * delta_time;
+    object->vx += p2d_state.p2d_gravity.x * delta_time;
+    object->vy += p2d_state.p2d_gravity.y * delta_time;
 
     // linear velocity
     // object->vx += object->force_x * delta_time;
@@ -119,8 +119,14 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         vec2_t ra_perp = (vec2_t){.data={-ra.y, ra.x}};
         vec2_t rb_perp = (vec2_t){.data={-rb.y, rb.x}};
 
-        vec2_t angular_linear_velocity_a = (vec2_t){.data={obj_a->vr * ra_perp.x, obj_a->vr * ra_perp.y}};
-        vec2_t angular_linear_velocity_b = (vec2_t){.data={obj_b->vr * rb_perp.x, obj_b->vr * rb_perp.y}};
+        float c = M_PI / 180.0f;
+
+        // radians -> degrees
+        float a_ang_radians = obj_a->vr * c;
+        float b_ang_radians = obj_b->vr * c;
+
+        vec2_t angular_linear_velocity_a = (vec2_t){.data={a_ang_radians * ra_perp.x, a_ang_radians * ra_perp.y}};
+        vec2_t angular_linear_velocity_b = (vec2_t){.data={b_ang_radians * rb_perp.x, b_ang_radians * rb_perp.y}};
 
         vec2_t relative_velocity = lla_vec2_sub(
             lla_vec2_add((vec2_t){.data={obj_b->vx, obj_b->vy}}, angular_linear_velocity_b),
