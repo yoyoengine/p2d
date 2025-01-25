@@ -140,11 +140,9 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         float numerator = -(1.0f + e) * contact_velocity_mag;
 
         float j = numerator / denom;
-
-        float imp = j * obj_a->inv_mass;
         j /= (float)contact_count;
 
-        vec2_t impulse = lla_vec2_scale(normal, imp);
+        vec2_t impulse = lla_vec2_scale(normal, j);
 
         impulse_list[i] = impulse;
     }
@@ -155,6 +153,7 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         vec2_t rb = rb_list[i];
 
         vec2_t a_lin_vel_delta = lla_vec2_scale(impulse, -1.0f);
+        a_lin_vel_delta = lla_vec2_scale(a_lin_vel_delta, obj_a->inv_mass);
         obj_a->vx += a_lin_vel_delta.x;
         obj_a->vy += a_lin_vel_delta.y;
 
@@ -265,13 +264,11 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         float numerator = -(1.0f + e) * contact_velocity_mag;
 
         float j = numerator / denom;
-
-        float imp = j * obj_a->inv_mass;
         j /= (float)contact_count;
 
         j_list[i] = j;
 
-        vec2_t impulse = lla_vec2_scale(normal, imp);
+        vec2_t impulse = lla_vec2_scale(normal, j);
 
         impulse_list[i] = impulse;
     }
@@ -285,6 +282,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         vec2_t rb = rb_list[i];
 
         vec2_t a_lin_vel_delta = lla_vec2_scale(impulse, -1.0f);
+        a_lin_vel_delta = lla_vec2_scale(a_lin_vel_delta, obj_a->inv_mass);
         obj_a->vx += a_lin_vel_delta.x;
         obj_a->vy += a_lin_vel_delta.y;
 
@@ -407,6 +405,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         vec2_t rb = rb_list[i];
 
         vec2_t a_lin_vel_delta = lla_vec2_scale(friction_impulse, -1.0f);
+        a_lin_vel_delta = lla_vec2_scale(a_lin_vel_delta, obj_a->inv_mass);
         obj_a->vx += a_lin_vel_delta.x;
         obj_a->vy += a_lin_vel_delta.y;
 
