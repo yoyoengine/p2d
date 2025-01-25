@@ -137,10 +137,12 @@ void spawn_circle(int x, int y) {
             .radius = 50,
         },
         // .density = 0.5f,
-        .density = 10.0f,
+        .density = 2.0f,
         // .mass = 3,
         .restitution = 0.6,
         // .inertia = 0.5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(obj);
 
@@ -160,10 +162,12 @@ void spawn_rect(int x, int y) {
         },
         // .density = 0.5f,
         // .density = 0.25f,
-        .density = 10.0f,
+        .density = 2.0f,
         // .mass = 5,
         .restitution = .6,
         // .inertia = 0.5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(obj);
 
@@ -213,9 +217,9 @@ int main(int argc, char** argv) {
             .height = 40,
         },
         .density = 1,
-        .mass = 10,
         .restitution = .5,
-        .inertia = 0.5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(obj);
     p2d_create_object(obj.get());
@@ -240,6 +244,8 @@ int main(int argc, char** argv) {
         // .mass = 10,
         .restitution = .5,
         // .inertia = 0.5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(b);
     p2d_create_object(b.get());
@@ -258,6 +264,8 @@ int main(int argc, char** argv) {
         },
         .density = 1,
         .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(a);
     p2d_create_object(a.get());
@@ -277,6 +285,8 @@ int main(int argc, char** argv) {
         },
         .density = 1,
         .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(z);
     p2d_create_object(z.get());
@@ -296,6 +306,8 @@ int main(int argc, char** argv) {
         },
         .density = 1,
         .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(y);
     p2d_create_object(y.get());
@@ -315,6 +327,8 @@ int main(int argc, char** argv) {
         },
         .density = 1,
         .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(n);
     p2d_create_object(n.get());
@@ -334,6 +348,8 @@ int main(int argc, char** argv) {
         },
         .density = 1,
         .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
     });
     objects.push_back(x);
     p2d_create_object(x.get());

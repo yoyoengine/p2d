@@ -60,7 +60,6 @@ struct p2d_cb_data {
     particularly for visualization and debug overlays.
 */
 struct p2d_state {
-
     /*
         Runtime Parameters
     */
@@ -130,20 +129,16 @@ struct p2d_object {
 
     // physical properties
     float density;
-
-    float mass; // TODO: auto calc mass from density?
     float restitution;
 
+    float static_friction;
+    float dynamic_friction;
+
+
     // computed physical properties
-    
-    // 1m = 100 pixels
-
-    float inertia; // automatically calculated?
-
-    // real computed
-    float inv_mass;
-    float inv_inertia;
     float area;
+    float mass,     inv_mass;
+    float inertia,  inv_inertia;
 
     /*
         User data, useful for things like identifying this object in an
