@@ -52,6 +52,7 @@ bool p2d_init(
     p2d_state.p2d_substeps = substeps;
 
     p2d_state.p2d_mass_scaling = P2D_DEFAULT_MASS_SCALE;
+    p2d_state.p2d_air_density = P2D_DEFAULT_AIR_DENSITY;
 
     if(!on_collision) {
         p2d_logf(P2D_LOG_WARN, "p2d_init: on_collision is NULL.\n");
@@ -195,7 +196,7 @@ bool p2d_create_object(struct p2d_object *object) {
             break;
     }
 
-    float mass_scaling = 0.00015f;
+    float mass_scaling = p2d_state.p2d_mass_scaling; // TODO: this breaks when changing mid sim- kinda on the user atp
 
     if(!object->is_static) {
         // compute mass and inertia from density and size
@@ -213,9 +214,6 @@ bool p2d_create_object(struct p2d_object *object) {
 
     object->inv_mass = (object->mass > 0.0f) ? 1.0f / object->mass : 0.0f;
     object->inv_inertia = (object->inertia > 0.0f) ? 1.0f / object->inertia : 0.0f;
-
-    printf("object %p: mass: %f, inertia: %f\n", (void *)object, object->mass, object->inertia);
-    printf("object %p: inv_mass: %f, inv_inertia: %f\n", (void *)object, object->inv_mass, object->inv_inertia);
 
     p2d_state.p2d_object_count++;
     return true;

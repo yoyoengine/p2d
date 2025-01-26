@@ -29,7 +29,7 @@
     Densities: g/cm^3
 */
 #ifndef P2D_MIN_DENSITY
-    #define P2D_MIN_DENSITY 0.25f
+    #define P2D_MIN_DENSITY 0.5f
 #endif
 
 #ifndef P2D_MAX_DENSITY
@@ -38,6 +38,10 @@
 
 #ifndef P2D_DEFAULT_MASS_SCALE
     #define P2D_DEFAULT_MASS_SCALE 0.00015f
+#endif
+
+#ifndef P2D_DEFAULT_AIR_DENSITY
+    #define P2D_DEFAULT_AIR_DENSITY 0.00001f
 #endif
 
 /*
@@ -67,6 +71,7 @@ struct p2d_state {
     int     p2d_substeps;
     vec2_t  p2d_gravity;
     float   p2d_mass_scaling;
+    float   p2d_air_density;
 
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);

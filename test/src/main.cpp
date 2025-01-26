@@ -162,13 +162,15 @@ void spawn_rect(int x, int y) {
             .width = 100,
             .height = 100,
         },
-        // .density = 0.5f,
+        .density = 10.0f,
         // .density = 0.25f,
-        .density = 2.0f,
+        // .density = 2.0f,
         // .mass = 5,
         .restitution = .6,
         // .inertia = 0.5,
+        // .static_friction = 1.0,
         .static_friction = 1.0,
+        // .dynamic_friction = 0.7,
         .dynamic_friction = 0.7,
     });
     objects.push_back(obj);
@@ -187,6 +189,15 @@ void log_wrapper(int level, const char* fmt, ...) {
 int main(int argc, char** argv) {
     if(!SDL_Init(SDL_INIT_VIDEO)) {
         printf("SDL_Init failed: %s\n", SDL_GetError());
+    }
+
+    int tile_size = 100;
+    // int iterations = 20;
+    int iterations = 1;
+
+    if(!p2d_init(tile_size, iterations, collision_callback, trigger_callback, log_wrapper)) {
+        printf("p2d_init failed\n");
+        return 1;
     }
 
     // objects.push_back(p2d_object{
@@ -356,14 +367,47 @@ int main(int argc, char** argv) {
     objects.push_back(x);
     p2d_create_object(x.get());
 
-    int tile_size = 100;
-    // int iterations = 20;
-    int iterations = 1;
+    auto ball = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 600,
+        .y = 0,
+        .vx = 250,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 100,
+            .height = 100,
+        },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(ball);
+    p2d_create_object(ball.get());
 
-    if(!p2d_init(tile_size, iterations, collision_callback, trigger_callback, log_wrapper)) {
-        printf("p2d_init failed\n");
-        return 1;
-    }
+    auto ball2 = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = false,
+        .x = 800,
+        .y = 0,
+        .vx = 0,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 100,
+            .height = 100,
+        },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(ball2);
+    p2d_create_object(ball2.get());
 
     SDL_Window* window;
     SDL_Renderer* renderer;

@@ -10,6 +10,42 @@
 #include "p2d/contacts.h"
 #include "p2d/resolution.h"
 
+void _p2d_apply_air_resistance(struct p2d_object *object, float delta_time) {
+    if(!object) {
+        p2d_logf(P2D_LOG_ERROR, "_p2d_apply_air_resistance: object is NULL.\n");
+        return;
+    }
+    
+    vec2_t v_sq = (vec2_t){{object->vx * object->vx, object->vy * object->vy}};
+
+    float drag_coefficient;
+    float xc_area;
+    switch(object->type) {
+        case P2D_OBJECT_RECTANGLE:
+            drag_coefficient = 2.05f;
+            xc_area = object->rectangle.width_meters * object->rectangle.height_meters;
+            break;
+        case P2D_OBJECT_CIRCLE:
+            drag_coefficient = 1.17f;
+            xc_area = M_PI * object->circle.radius_meters * object->circle.radius_meters;
+            break;
+        default:
+            p2d_logf(P2D_LOG_WARN, "_p2d_apply_air_resistance: object type not recognized.\n");
+            return;
+    }
+
+    // TODO: take in
+    float mass_scaling = p2d_state.p2d_mass_scaling;
+    xc_area *= mass_scaling;
+
+    float rx = 0.5f * p2d_state.p2d_air_density * drag_coefficient * xc_area * v_sq.x;
+    float ry = 0.5f * p2d_state.p2d_air_density * drag_coefficient * xc_area * v_sq.y;
+
+    // TODO: clever epsilon
+    object->vx -= (rx * delta_time);
+    object->vy -= (ry * delta_time);
+}
+
 void p2d_object_step(struct p2d_object *object, float delta_time, int iterations) {
     if(!object) {
         p2d_logf(P2D_LOG_ERROR, "p2d_object_step: object is NULL.\n");
@@ -28,6 +64,9 @@ void p2d_object_step(struct p2d_object *object, float delta_time, int iterations
     // apply gravity
     object->vx += p2d_state.p2d_gravity.x * delta_time;
     object->vy += p2d_state.p2d_gravity.y * delta_time;
+
+    // apply air resistance
+    _p2d_apply_air_resistance(object, delta_time);
 
     // update position
     object->x += object->vx * delta_time;

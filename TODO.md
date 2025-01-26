@@ -15,4 +15,6 @@ future:
 
 - add joints!!
 
-air resistance
+add culling frame to force inactive objects to sleep
+
+rects not bouncing on two point contact
