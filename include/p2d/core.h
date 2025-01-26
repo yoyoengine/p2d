@@ -21,6 +21,10 @@
     #define P2D_MAX_OBJECTS 2000
 #endif
 
+#ifndef P2D_MAX_JOINTS
+    #define P2D_MAX_JOINTS 500
+#endif
+
 #ifndef P2D_BUCKETS
     #define P2D_BUCKETS 1000
 #endif
@@ -173,6 +177,17 @@ struct p2d_object {
         Debug Optionals
     */
     
+};
+
+struct p2d_joint {
+    struct p2d_object *a;
+    struct p2d_object *b;
+
+    vec2_t local_anchor_a;
+    vec2_t local_anchor_b;
+
+    float bias_factor;
+    float softness;
 };
 
 struct p2d_collision_manifold {

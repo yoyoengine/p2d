@@ -17,6 +17,7 @@
 // }
 
 std::vector<std::shared_ptr<p2d_object>> objects;
+std::vector<std::shared_ptr<p2d_joint>> joints;
 
 void _draw_circle(SDL_Renderer *renderer, int center_x, int center_y, int radius)
 {
@@ -367,6 +368,64 @@ int main(int argc, char** argv) {
     objects.push_back(x);
     p2d_create_object(x.get());
 
+    auto f = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        .is_static = true,
+        .x = 600,
+        .y = 200,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 50,
+            .height = 50,
+        },
+        .density = 1,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(f);
+    p2d_create_object(f.get());
+
+    auto fc = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        // .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 600,
+        .y = 400,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        // .rotation = 45,
+        .rectangle= {
+            .width = 50,
+            .height = 50,
+        },
+        // .circle= {
+        //     .radius = 50,
+        // },
+        .density = 1,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(fc);
+    p2d_create_object(fc.get());
+
+    // add a joint
+    auto joint = std::make_shared<p2d_joint>(p2d_joint{
+        .a = f.get(),
+        .b = fc.get(),
+        .local_anchor_a = (vec2_t){.x = 0, .y = 0},
+        .local_anchor_b = (vec2_t){.x = 0, .y = -25},
+        .bias_factor = 0.1,
+        .softness = 0.5,
+    });
+    joints.push_back(joint);
+    p2d_add_joint(joint.get());
+
     // auto ball = std::make_shared<p2d_object>(p2d_object{
     //     .type = P2D_OBJECT_RECTANGLE,
     //     .is_static = false,
@@ -559,6 +618,20 @@ int main(int argc, char** argv) {
         // draw objects
         for(auto& object : objects) {
             draw_object(renderer, object.get());
+        }
+
+        // draw joints
+        for (auto& joint : joints) {
+            struct p2d_joint j = *joint.get();
+
+            p2d_object a = *j.a;
+            p2d_object b = *j.b;
+
+            vec2_t world_anchor_a = p2d_get_joint_world_anchor(j.a, j.local_anchor_a);
+            vec2_t world_anchor_b = p2d_get_joint_world_anchor(j.b, j.local_anchor_b);
+
+            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+            SDL_RenderLine(renderer, world_anchor_a.x, world_anchor_a.y, world_anchor_b.x, world_anchor_b.y);
         }
 
         // draw frustum

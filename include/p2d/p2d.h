@@ -24,6 +24,7 @@ extern "C" {
 #include "helpers.h"
 #include "detection.h"
 #include "contacts.h"
+#include "joint.h"
 
 #ifdef __cplusplus
 }

@@ -14,6 +14,7 @@
 #include "p2d/core.h"
 #include "p2d/world.h"
 #include "p2d/types.h"
+#include "p2d/joint.h"
 #include "p2d/pairs.h"
 #include "p2d/collide.h"
 #include "p2d/helpers.h"
@@ -427,6 +428,9 @@ void p2d_step(float delta_time) {
             node_a = node_a->next;
         }
     }
+
+    // resolve joints
+    p2d_resolve_joints(delta_time, p2d_state.p2d_substeps);
 
     } // substepping
 
