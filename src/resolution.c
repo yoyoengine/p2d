@@ -179,7 +179,8 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         float numerator = -(1.0f + e) * contact_velocity_mag;
 
         float j = numerator / denom;
-        j /= (float)contact_count;
+        // j /= (float)contact_count;
+        // ^^ DIFFERENT FROM TWO-BIT
 
         vec2_t impulse = lla_vec2_scale(normal, j);
 
@@ -303,7 +304,8 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         float numerator = -(1.0f + e) * contact_velocity_mag;
 
         float j = numerator / denom;
-        j /= (float)contact_count;
+        // j /= (float)contact_count;
+        // ^^ DIFFERENT FROM TWO-BIT
 
         j_list[i] = j;
 

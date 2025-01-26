@@ -162,7 +162,7 @@ void spawn_rect(int x, int y) {
             .width = 100,
             .height = 100,
         },
-        .density = 10.0f,
+        .density = 2.0f,
         // .density = 0.25f,
         // .density = 2.0f,
         // .mass = 5,
@@ -367,47 +367,47 @@ int main(int argc, char** argv) {
     objects.push_back(x);
     p2d_create_object(x.get());
 
-    auto ball = std::make_shared<p2d_object>(p2d_object{
-        .type = P2D_OBJECT_RECTANGLE,
-        .is_static = false,
-        .x = 600,
-        .y = 0,
-        .vx = 250,
-        // .vy = 10,
-        // .vr = -20,
-        // .rotation = 45,
-        .rectangle= {
-            .width = 100,
-            .height = 100,
-        },
-        .density = 2,
-        .restitution = .5,
-        .static_friction = 1.0,
-        .dynamic_friction = 0.7,
-    });
-    objects.push_back(ball);
-    p2d_create_object(ball.get());
+    // auto ball = std::make_shared<p2d_object>(p2d_object{
+    //     .type = P2D_OBJECT_RECTANGLE,
+    //     .is_static = false,
+    //     .x = 600,
+    //     .y = 0,
+    //     .vx = 250,
+    //     // .vy = 10,
+    //     // .vr = -20,
+    //     // .rotation = 45,
+    //     .rectangle= {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    //     .density = 2,
+    //     .restitution = .5,
+    //     .static_friction = 1.0,
+    //     .dynamic_friction = 0.7,
+    // });
+    // objects.push_back(ball);
+    // p2d_create_object(ball.get());
 
-    auto ball2 = std::make_shared<p2d_object>(p2d_object{
-        .type = P2D_OBJECT_RECTANGLE,
-        .is_static = false,
-        .x = 800,
-        .y = 0,
-        .vx = 0,
-        // .vy = 10,
-        // .vr = -20,
-        // .rotation = 45,
-        .rectangle= {
-            .width = 100,
-            .height = 100,
-        },
-        .density = 2,
-        .restitution = .5,
-        .static_friction = 1.0,
-        .dynamic_friction = 0.7,
-    });
-    objects.push_back(ball2);
-    p2d_create_object(ball2.get());
+    // auto ball2 = std::make_shared<p2d_object>(p2d_object{
+    //     .type = P2D_OBJECT_RECTANGLE,
+    //     .is_static = false,
+    //     .x = 800,
+    //     .y = 0,
+    //     .vx = 0,
+    //     // .vy = 10,
+    //     // .vr = -20,
+    //     // .rotation = 45,
+    //     .rectangle= {
+    //         .width = 100,
+    //         .height = 100,
+    //     },
+    //     .density = 2,
+    //     .restitution = .5,
+    //     .static_friction = 1.0,
+    //     .dynamic_friction = 0.7,
+    // });
+    // objects.push_back(ball2);
+    // p2d_create_object(ball2.get());
 
     SDL_Window* window;
     SDL_Renderer* renderer;
