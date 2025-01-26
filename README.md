@@ -19,6 +19,9 @@ A 2D rigidbody physics system written for yoyoengine.
 - Collision and trigger callbacks
 - Easy synchronization with existing ECS
 
+> [!WARNING]  
+> Internal rotations are stored in radians (not degrees!) so make sure you convert properly.
+
 ## Usage
 
 ```c
@@ -63,7 +66,7 @@ p2d_shutdown();
 |---------------------|---------------------------------------------|----------|-----------------|
 | Debug Resolution    | The current basic resolution has edge cases | High     | Done            |
 | Rotation Resolution | Implement rotation and torque               | High     | Done            |
-| Friction Resolution | Implement friction                          | High     | In Progress     |
+| Friction Resolution | Implement friction                          | High     | Done            |
 | Joints              | Constraints between objects                 | High     | Planned         |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |

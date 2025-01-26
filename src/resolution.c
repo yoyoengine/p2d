@@ -103,7 +103,7 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
 
         float c = M_PI / 180.0f;
 
-        // radians -> degrees
+        // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
         float b_ang_radians = obj_b->vr * c;
 
@@ -227,7 +227,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
 
         float c = M_PI / 180.0f;
 
-        // radians -> degrees
+        // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
         float b_ang_radians = obj_b->vr * c;
 
@@ -337,7 +337,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
 
         float c = M_PI / 180.0f;
 
-        // radians -> degrees
+        // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
         float b_ang_radians = obj_b->vr * c;
 
@@ -365,10 +365,10 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         float rb_perp_dot_t = lla_vec2_dot(rb_perp, tangent);
         float rb_perp_dot_t_squared = rb_perp_dot_t * rb_perp_dot_t;
 
-        float rapdn_squared_times_iv = ra_perp_dot_t_squared * obj_a->inv_inertia;
-        float rbpdn_squared_times_iv = rb_perp_dot_t_squared * obj_b->inv_inertia;
+        float rapdt_squared_times_iv = ra_perp_dot_t_squared * obj_a->inv_inertia;
+        float rbpdt_squared_times_iv = rb_perp_dot_t_squared * obj_b->inv_inertia;
 
-        float denom_right = rapdn_squared_times_iv + rbpdn_squared_times_iv;
+        float denom_right = rapdt_squared_times_iv + rbpdt_squared_times_iv;
         
         float added_inv_masses = obj_a->inv_mass + obj_b->inv_mass;
         vec2_t norm_scaled_mass = lla_vec2_scale(tangent, added_inv_masses);

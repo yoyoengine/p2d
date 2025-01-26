@@ -92,8 +92,10 @@ void draw_object(SDL_Renderer* renderer, p2d_object* object) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         _draw_circle(renderer, object->x, object->y, object->circle.radius);
 
-        float end_x = object->x + (object->circle.radius * cosf(object->rotation));
-        float end_y = object->y + (object->circle.radius * sinf(object->rotation));
+        float rot_rad = object->rotation * (M_PI / 180);
+
+        float end_x = object->x + (object->circle.radius * cosf(rot_rad));
+        float end_y = object->y + (object->circle.radius * sinf(rot_rad));
         SDL_RenderLine(renderer, object->x, object->y, end_x, end_y);
     }
 }
@@ -372,7 +374,7 @@ int main(int argc, char** argv) {
     struct p2d_contact_list *last_contacts = p2d_contact_list_create(25);
     p2d_state.out_contacts = last_contacts;
 
-    p2d_state.p2d_gravity = (vec2_t){.x = 0, .y = 30.0f};
+    p2d_state.p2d_gravity = (vec2_t){.x = 0, .y = 60.0f};
 
     while(1) {
         int time = SDL_GetTicks();
