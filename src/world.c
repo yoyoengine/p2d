@@ -10,6 +10,8 @@
 #include "p2d/log.h"
 #include "p2d/core.h"
 #include "p2d/world.h"
+#include "p2d/helpers.h"
+#include "p2d/detection.h"
 
 // collection of world tiles
 struct p2d_object * p2d_objects[P2D_MAX_OBJECTS] = {NULL};
@@ -96,12 +98,24 @@ void p2d_world_remove_all(void) {
 void p2d_rebuild_world(void) {
     p2d_world_remove_all();
 
+    p2d_state.p2d_sleeping_count = 0;
+
     for(int i = 0; i < P2D_MAX_OBJECTS; i++) {
         struct p2d_object *object = p2d_objects[i];
         if(object != NULL) {
             if(object->in_active && !*object->in_active) {
                 continue;
             }
+
+            // frustum
+            if(p2d_state.p2d_frustum_sleeping) {
+                if(!p2d_obb_intersects_obb(p2d_state.p2d_frustum, p2d_get_obb(object))) {
+                    p2d_state.p2d_sleeping_count++;
+                    object->sleeping = true;
+                    continue;
+                }
+                object->sleeping = false;
+            } // NOTE: this makes frustum sleeping INCOMPATIBLE with future sleeping!
 
             p2d_for_each_intersecting_tile(object, _register_intersecting_tiles);
         }

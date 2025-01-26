@@ -18,6 +18,7 @@ A 2D rigidbody physics system written for yoyoengine.
 - OOB and Circle collision detection and resolution
 - Collision and trigger callbacks
 - Easy synchronization with existing ECS
+- Frustum-culled sleeping objects
 
 > [!WARNING]  
 > Internal rotations are stored in radians (not degrees!) so make sure you convert properly.
@@ -71,6 +72,7 @@ p2d_shutdown();
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
+| Add "True" Sleeping | Standstill objects get optimized out        | Low      | Maybe Later     |
 
 ## Testing
 

@@ -419,6 +419,8 @@ int main(int argc, char** argv) {
     p2d_state.out_contacts = last_contacts;
 
     p2d_state.p2d_gravity = (vec2_t){.x = 0, .y = 60.0f};
+    p2d_state.p2d_frustum_sleeping = true;
+    p2d_state.p2d_frustum = (struct p2d_obb){.x = (1920 - 1280) / 2, .y = (1080 - 720) / 2, .w = 1280, .h = 720};
 
     while(1) {
         int time = SDL_GetTicks();
@@ -569,6 +571,7 @@ int main(int argc, char** argv) {
             printf("|        STATE        |\n");
             printf("+---------------------+\n");
             printf("objects: %d\n", p2d_state.p2d_object_count);
+            printf("sleeping: %d\n", p2d_state.p2d_sleeping_count);
             printf("world nodes: %d\n", p2d_state.p2d_world_node_count);
             printf("contact checks: %d\n", p2d_state.p2d_contact_checks);
             printf("contacts found: %d\n", p2d_state.p2d_contacts_found);

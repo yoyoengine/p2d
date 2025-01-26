@@ -51,6 +51,8 @@ bool p2d_init(
     }
     p2d_state.p2d_substeps = substeps;
 
+    p2d_state.p2d_frustum_sleeping = false;
+
     p2d_state.p2d_mass_scaling = P2D_DEFAULT_MASS_SCALE;
     p2d_state.p2d_air_density = P2D_DEFAULT_AIR_DENSITY;
 
@@ -336,7 +338,9 @@ void p2d_step(float delta_time) {
         if(object == NULL) {
             continue;
         }
-        p2d_object_step(object, delta_time, p2d_state.p2d_substeps);
+
+        if(!object->sleeping)
+            p2d_object_step(object, delta_time, p2d_state.p2d_substeps);
     }
 
     /*

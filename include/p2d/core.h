@@ -73,6 +73,10 @@ struct p2d_state {
     float   p2d_mass_scaling;
     float   p2d_air_density;
 
+    // frustum sleeping
+    bool   p2d_frustum_sleeping;
+    struct p2d_obb p2d_frustum;
+
     // callbacks
     void (*on_collision)(struct p2d_cb_data *data);
     void (*on_trigger)(struct p2d_cb_data *data);
@@ -80,6 +84,7 @@ struct p2d_state {
 
     // tracking / debug
     int p2d_object_count;
+    int p2d_sleeping_count;
     int p2d_world_node_count;
     int p2d_contact_checks;
     int p2d_contacts_found;
@@ -150,6 +155,11 @@ struct p2d_object {
         engine's ECS to operate on its impulses when collisions occur.
     */
     void *user_data;
+
+    /*
+        States
+    */
+    bool sleeping;
 
     /*
         in/out reference values
