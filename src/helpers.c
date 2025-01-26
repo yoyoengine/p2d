@@ -73,8 +73,8 @@ struct p2d_obb p2d_get_obb(struct p2d_object *object) {
     }
     else { // P2D_OBJECT_CIRCLE
         return (struct p2d_obb){
-            .x = object->x,
-            .y = object->y,
+            .x = object->x - object->circle.radius,
+            .y = object->y - object->circle.radius,
             .w = object->circle.radius * 2,
             .h = object->circle.radius * 2,
             .r = 0

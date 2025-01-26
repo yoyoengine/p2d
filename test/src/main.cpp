@@ -561,6 +561,17 @@ int main(int argc, char** argv) {
             draw_object(renderer, object.get());
         }
 
+        // draw frustum
+        if(p2d_state.p2d_frustum_sleeping) {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            struct p2d_obb frustum = p2d_state.p2d_frustum;
+            struct p2d_obb_verts verts = p2d_obb_to_verts(frustum);
+            for(int i = 0; i < 4; i++) {
+                int i2 = (i + 1) % 4;
+                SDL_RenderLine(renderer, verts.verts[i].x, verts.verts[i].y, verts.verts[i2].x, verts.verts[i2].y);
+            }
+        }
+
         SDL_RenderPresent(renderer);
     
         // // clear the terminal
