@@ -21,7 +21,7 @@ A 2D rigidbody physics system written for yoyoengine.
 - Frustum-culled sleeping objects
 
 > [!WARNING]  
-> Internal rotations are stored in radians (not degrees!) so make sure you convert properly.
+> Internal rotations are stored in degrees (not radians!) so make sure you convert properly.
 
 ## Usage
 
@@ -69,6 +69,7 @@ p2d_shutdown();
 | Rotation Resolution | Implement rotation and torque               | High     | Done            |
 | Friction Resolution | Implement friction                          | High     | Done            |
 | Joints              | Constraints between objects                 | High     | In Progress     |
+| Joints              | Constraints between objects                 | Medium   | Planned         |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
@@ -85,3 +86,5 @@ Here are some resources that helped me along the way, which can hopefully be use
 - [(Book) Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 - [(Book) Real Time Collision Detection (Book)](https://a.co/d/g9Rpjsk)
 - [(Youtube) Two-Bit Coding Physics Engine Playlist](https://www.youtube.com/playlist?list=PLSlpr6o9vURwq3oxVZSimY8iC-cdd3kIs)
+- [(Articles) Rigid Body Dyanmics - Chris Hecker](https://www.chrishecker.com/Rigid_Body_Dynamics)
+- [(Reference Example) Box2D](https://github.com/erincatto/box2d-lite/tree/master/Box2D)

@@ -15,4 +15,4 @@ future:
 
 - add joints!!
 
-add culling frame to force inactive objects to sleep
+- add collision layers
