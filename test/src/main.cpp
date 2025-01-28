@@ -57,14 +57,6 @@ void _draw_circle(SDL_Renderer *renderer, int center_x, int center_y, int radius
     }
 }
 
-void collision_callback(p2d_cb_data* data) {
-    printf("collision detected\n");
-}
-
-void trigger_callback(p2d_cb_data* data) {
-    printf("trigger detected\n");
-}
-
 void draw_object(SDL_Renderer* renderer, p2d_object* object) {
     
     struct p2d_aabb aabb = p2d_get_aabb(object);
@@ -185,6 +177,14 @@ void log_wrapper(int level, const char* fmt, ...) {
     va_start(args, fmt);
     vprintf(fmt, args);
     va_end(args);
+}
+
+void trigger_callback(p2d_cb_data* data) {
+    printf("trigger detected\n");
+}
+
+void collision_callback(p2d_cb_data* data) {
+    printf("collision detected\n");
 }
 
 int main(int argc, char** argv) {
@@ -478,8 +478,11 @@ int main(int argc, char** argv) {
     p2d_state.out_contacts = last_contacts;
 
     p2d_state.p2d_gravity = (vec2_t){.x = 0, .y = 60.0f};
-    p2d_state.p2d_frustum_sleeping = true;
-    p2d_state.p2d_frustum = (struct p2d_obb){.x = (1920 - 1280) / 2, .y = (1080 - 720) / 2, .w = 1280, .h = 720};
+    // p2d_state.p2d_frustum_sleeping = true;
+    // p2d_state.p2d_frustum = (struct p2d_obb){.x = (1920 - 1280) / 2, .y = (1080 - 720) / 2, .w = 1280, .h = 720};
+
+    p2d_state.on_trigger = trigger_callback;
+    p2d_state.on_collision = collision_callback;
 
     while(1) {
         int time = SDL_GetTicks();

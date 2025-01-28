@@ -1,10 +1,6 @@
 # TODO
 
-actually call callbacks
-
 attune deltatime for debugger so you can do more than one frame
-
-friction!
 
 ## notes/divergences
 
@@ -16,3 +12,6 @@ future:
 - add joints!!
 
 - add collision layers
+
+ontriggerenter ontriggerexit ontriggerstay
+/ general callback improvement

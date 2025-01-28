@@ -324,6 +324,11 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
 void p2d_step(float delta_time) {
     // struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
 
+    if(delta_time <= 0.0f) {
+        p2d_logf(P2D_LOG_ERROR, "p2d_step: delta_time must be greater than 0.\n");
+        return;
+    }
+
     if(p2d_state.out_contacts) {
         p2d_contact_list_clear(p2d_state.out_contacts);
     }
@@ -390,6 +395,22 @@ void p2d_step(float delta_time) {
                     if(p2d_collide(a, b, &d)) {
                         p2d_add_collision_pair(a, b);
 
+                        /*
+                            If one is a trigger, no need to seperate or solve
+
+                            TODO: could also include normal and depth, or collider collidee info
+                        */
+                        if(a->is_trigger || b->is_trigger) {
+                            if(p2d_state.on_trigger) {
+                                struct p2d_cb_data data = {
+                                    .a = a,
+                                    .b = b
+                                };
+                                p2d_state.on_trigger(&data);
+                                break;
+                            }
+                        }
+
                         // get all contacts
                         struct p2d_contact_list *contacts = p2d_generate_contacts(a, b);
 
@@ -419,6 +440,15 @@ void p2d_step(float delta_time) {
 
                         // cleanup
                         p2d_contact_list_destroy(contacts);
+
+                        // inform the subscriber of the collision
+                        if(p2d_state.on_collision) {
+                            struct p2d_cb_data data = {
+                                .a = a,
+                                .b = b
+                            };
+                            p2d_state.on_collision(&data);
+                        }
                     }
                 }
 

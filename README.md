@@ -69,7 +69,7 @@ p2d_shutdown();
 | Rotation Resolution | Implement rotation and torque               | High     | Done            |
 | Friction Resolution | Implement friction                          | High     | Done            |
 | Joints              | Constraints between objects                 | High     | In Progress     |
-| Joints              | Constraints between objects                 | Medium   | Planned         |
+| Collision Layers    | Specify what can collide with what          | Medium   | Planned         |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
