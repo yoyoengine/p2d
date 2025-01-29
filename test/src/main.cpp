@@ -195,11 +195,14 @@ int main(int argc, char** argv) {
     int tile_size = 100;
     // int iterations = 20;
     int iterations = 1;
+    int joint_iterations = 5;
 
-    if(!p2d_init(tile_size, iterations, collision_callback, trigger_callback, log_wrapper)) {
+    if(!p2d_init(tile_size, collision_callback, trigger_callback, log_wrapper)) {
         printf("p2d_init failed\n");
         return 1;
     }
+    p2d_state.p2d_substeps = iterations;
+    p2d_state.p2d_joint_iterations = joint_iterations;
 
     // objects.push_back(p2d_object{
     //     .type = P2D_OBJECT_CIRCLE,
@@ -220,6 +223,7 @@ int main(int argc, char** argv) {
     auto obj = std::make_shared<p2d_object>(p2d_object{
         .type = P2D_OBJECT_RECTANGLE,
         .is_static = true,
+        // .is_trigger = true,
         .x = 60,
         .y = 1000,
         // .vx = 10,
@@ -376,7 +380,7 @@ int main(int argc, char** argv) {
         // .vx = 10,
         // .vy = 10,
         // .vr = -20,
-        // .rotation = 45,
+        .rotation = 0,
         .rectangle= {
             .width = 50,
             .height = 50,
@@ -394,11 +398,11 @@ int main(int argc, char** argv) {
         // .type = P2D_OBJECT_CIRCLE,
         .is_static = false,
         .x = 600,
-        .y = 400,
+        .y = 300,
         // .vx = 10,
         // .vy = 10,
         // .vr = -20,
-        // .rotation = 45,
+        .rotation = 0,
         .rectangle= {
             .width = 50,
             .height = 50,
@@ -406,7 +410,7 @@ int main(int argc, char** argv) {
         // .circle= {
         //     .radius = 50,
         // },
-        .density = 1,
+        .density = 2,
         .restitution = .5,
         .static_friction = 1.0,
         .dynamic_friction = 0.7,
@@ -414,17 +418,61 @@ int main(int argc, char** argv) {
     objects.push_back(fc);
     p2d_create_object(fc.get());
 
+    auto fcc = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        // .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 600,
+        .y = 400,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        .rotation = 0,
+        .rectangle= {
+            .width = 50,
+            .height = 50,
+        },
+        // .circle= {
+        //     .radius = 50,
+        // },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(fcc);
+    p2d_create_object(fcc.get());
+
     // add a joint
     auto joint = std::make_shared<p2d_joint>(p2d_joint{
         .a = f.get(),
         .b = fc.get(),
+        .type = P2D_JOINT_DISTANCE,
         .local_anchor_a = (vec2_t){.x = 0, .y = 0},
-        .local_anchor_b = (vec2_t){.x = 0, .y = -25},
-        .bias_factor = 0.1,
-        .softness = 0.5,
+        .local_anchor_b = (vec2_t){.x = 0, .y = 0},
+        // .local_anchor_b = (vec2_t){.x = 0, .y = -25},
+        .bias_factor = 0.01f,
+        .distance = {
+            .length = 100,
+        },
     });
     joints.push_back(joint);
     p2d_add_joint(joint.get());
+
+    auto jointc = std::make_shared<p2d_joint>(p2d_joint{
+        .a = fc.get(),
+        .b = fcc.get(),
+        .type = P2D_JOINT_DISTANCE,
+        .local_anchor_a = (vec2_t){.x = 0, .y = 0},
+        .local_anchor_b = (vec2_t){.x = 0, .y = 0},
+        // .local_anchor_b = (vec2_t){.x = 0, .y = -25},
+        .bias_factor = 0.01f,
+        .distance = {
+            .length = 100,
+        },
+    });
+    joints.push_back(jointc);
+    p2d_add_joint(jointc.get());
 
     // auto ball = std::make_shared<p2d_object>(p2d_object{
     //     .type = P2D_OBJECT_RECTANGLE,
@@ -483,6 +531,8 @@ int main(int argc, char** argv) {
 
     p2d_state.on_trigger = trigger_callback;
     p2d_state.on_collision = collision_callback;
+
+    paused = true;
 
     while(1) {
         int time = SDL_GetTicks();

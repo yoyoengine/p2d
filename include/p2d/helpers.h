@@ -16,6 +16,9 @@
 #include "p2d/core.h"
 #include "p2d/types.h"
 
+#define DEG_TO_RAD (M_PI / 180.0f)
+#define RAD_TO_DEG (180.0f / M_PI)
+
 P2D_API vec2_t p2d_object_center(struct p2d_object *object);
 
 P2D_API struct p2d_aabb p2d_get_aabb(struct p2d_object *object);

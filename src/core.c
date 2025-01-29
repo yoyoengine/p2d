@@ -32,7 +32,6 @@ struct p2d_state p2d_state = {0};
 
 bool p2d_init(
     int cell_size,
-    int substeps,
     void (*on_collision)(struct p2d_cb_data *data),
     void (*on_trigger)(struct p2d_cb_data *data),
     void (*log_fn)(int level, const char *fmt, ...)
@@ -46,11 +45,8 @@ bool p2d_init(
     }
     p2d_state.p2d_cell_size = cell_size;
 
-    if(substeps <= 0) {
-        p2d_logf(P2D_LOG_ERROR, "p2d_init: substeps must be greater than 0.\n");
-        return false;
-    }
-    p2d_state.p2d_substeps = substeps;
+    p2d_state.p2d_substeps = P2D_DEFAULT_SUBSTEPS;
+    p2d_state.p2d_joint_iterations = P2D_DEFAULT_JOINT_SUBSTEPS;
 
     p2d_state.p2d_frustum_sleeping = false;
 
@@ -459,10 +455,10 @@ void p2d_step(float delta_time) {
         }
     }
 
-    // resolve joints
-    p2d_resolve_joints(delta_time, p2d_state.p2d_substeps);
-
     } // substepping
 
-    // return every_contact;
+    // resolve joints
+    for(int i = 0; i < p2d_state.p2d_joint_iterations; i++)
+        p2d_resolve_joints(delta_time, p2d_state.p2d_substeps);
+
 }

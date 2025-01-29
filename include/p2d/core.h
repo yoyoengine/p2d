@@ -48,6 +48,14 @@
     #define P2D_DEFAULT_AIR_DENSITY 0.00001f
 #endif
 
+#ifndef P2D_DEFAULT_SUBSTEPS
+    #define P2D_DEFAULT_SUBSTEPS 10
+#endif
+
+#ifndef P2D_DEFAULT_JOINT_SUBSTEPS
+    #define P2D_DEFAULT_JOINT_SUBSTEPS 5
+#endif
+
 /*
     How callbacks and resolutions work:
 
@@ -73,6 +81,7 @@ struct p2d_state {
     */
     int     p2d_cell_size;
     int     p2d_substeps;
+    int     p2d_joint_iterations;
     vec2_t  p2d_gravity;
     float   p2d_mass_scaling;
     float   p2d_air_density;
@@ -179,15 +188,28 @@ struct p2d_object {
     
 };
 
+enum p2d_joint_type {
+    P2D_JOINT_DISTANCE,
+    // P2D_JOINT_WELD,
+    // P2D_JOINT_SPRING
+};
+
 struct p2d_joint {
     struct p2d_object *a;
     struct p2d_object *b;
+
+    enum p2d_joint_type type;
 
     vec2_t local_anchor_a;
     vec2_t local_anchor_b;
 
     float bias_factor;
-    float softness;
+
+    union {
+        struct {
+            float length;
+        } distance;
+    };
 };
 
 struct p2d_collision_manifold {
@@ -206,7 +228,6 @@ struct p2d_collision_manifold {
 */
 P2D_API bool p2d_init(
     int cell_size,
-    int substeps,
     void (*on_collision)(struct p2d_cb_data *data), 
     void (*on_trigger)(struct p2d_cb_data *data),
     void (*log_fn)(int level, const char *fmt, ...)

@@ -10,6 +10,10 @@
 #include "p2d/contacts.h"
 #include "p2d/resolution.h"
 
+/*
+    TODO: i dont think this _actually_ works, it dampens but it doesnt scale the decrease, its just like
+    multiplying a scalar with the magnitude
+*/
 void _p2d_apply_air_resistance(struct p2d_object *object, float delta_time) {
     if(!object) {
         p2d_logf(P2D_LOG_ERROR, "_p2d_apply_air_resistance: object is NULL.\n");
@@ -44,6 +48,8 @@ void _p2d_apply_air_resistance(struct p2d_object *object, float delta_time) {
     // TODO: clever epsilon
     object->vx -= (rx * delta_time);
     object->vy -= (ry * delta_time);
+
+    // TODO: angular drag
 }
 
 void p2d_object_step(struct p2d_object *object, float delta_time, int iterations) {
