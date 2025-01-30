@@ -188,15 +188,21 @@ struct p2d_object {
     
 };
 
-enum p2d_joint_type {
-    P2D_JOINT_DISTANCE,
+// TODO: damping
+enum p2d_joint_type { // distance is a spring with coef 1
+    P2D_JOINT_SPRING
+    // P2D_JOINT_HINGE,
     // P2D_JOINT_WELD,
-    // P2D_JOINT_SPRING
 };
 
 struct p2d_joint {
     struct p2d_object *a;
-    struct p2d_object *b;
+
+    bool anchored_to_world;
+    union {
+        struct p2d_object *b;   // anchored to another object
+        vec2_t world_anchor_b;  // anchored to world
+    };
 
     enum p2d_joint_type type;
 
@@ -207,8 +213,9 @@ struct p2d_joint {
 
     union {
         struct {
-            float length;
-        } distance;
+            float rest_length;
+            float spring_constant;
+        } spring_joint;
     };
 };
 

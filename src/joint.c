@@ -57,83 +57,69 @@ vec2_t p2d_get_joint_world_anchor(struct p2d_object *object, vec2_t local_anchor
 }
 
 /*
-    https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/8constraintsandsolvers/Physics%20-%20Constraints%20and%20Solvers.pdf
+    credit:
+        https://research.ncl.ac.uk/game/mastersdegree/gametechnologies/physicstutorials/8constraintsandsolvers/Physics%20-%20Constraints%20and%20Solvers.pdf
+    and
+        Chapter 6: Game Physics Engine Development (2nd edition) - Ian Millington
 */
-void _p2d_resolve_distance_joint(struct p2d_joint *joint, float deltatime) {
+void _p2d_resolve_spring_joint(struct p2d_joint *joint, float deltatime) {
     struct p2d_object *a = joint->a;
-    struct p2d_object *b = joint->b;
+    struct p2d_object *b = NULL;
 
-    printf("=========== distance joint ===========\n");
-    printf("original velocity a: %f %f\n", a->vx, a->vy);
-    printf("original velocity b: %f %f\n", b->vx, b->vy);
-
+    if(!joint->anchored_to_world)
+        b = joint->b;
+    
     vec2_t world_anchor_a = p2d_get_joint_world_anchor(joint->a, joint->local_anchor_a);
-    vec2_t world_anchor_b = p2d_get_joint_world_anchor(joint->b, joint->local_anchor_b);
 
-    printf("world anchor a: %f %f\n", world_anchor_a.x, world_anchor_a.y);
-    printf("world anchor b: %f %f\n", world_anchor_b.x, world_anchor_b.y);
+    vec2_t world_anchor_b;
+    if(joint->anchored_to_world)
+        world_anchor_b = joint->world_anchor_b;
+    else
+        world_anchor_b = p2d_get_joint_world_anchor(joint->b, joint->local_anchor_b);
 
     float bias_factor = joint->bias_factor;
-    float length = joint->distance.length;
-
-    printf("bias factor: %f\n", bias_factor);
-
+    float rest_length = joint->spring_joint.rest_length;
+    float spring_constant = joint->spring_joint.spring_constant;
+    
     vec2_t relative_position = lla_vec2_sub(world_anchor_a, world_anchor_b);
     float distance = lla_vec2_magnitude(relative_position);
 
-    printf("relative position: %f %f\n", relative_position.x, relative_position.y);
-    printf("distance: %f\n", distance);
-    float offset = distance - length; // should be 0 when at correct length
-
-    printf("offset: %f\n", offset);
+    float offset = distance - rest_length; // should be 0 when at correct length
 
     if(fabs(offset) > 0) {
-        vec2_t relative_velocity = (vec2_t){{a->vx - b->vx, a->vy - b->vy}};
 
-        printf("relative velocity: %f %f\n", relative_velocity.x, relative_velocity.y);
+        vec2_t relative_velocity;
+        if(joint->anchored_to_world) {
+            relative_velocity = (vec2_t){{a->vx, a->vy}};
+        } else {
+            relative_velocity = (vec2_t){{a->vx - b->vx, a->vy - b->vy}};
+        }
 
         vec2_t rel_pos_norm = lla_vec2_normalize(relative_position);
         rel_pos_norm.y = -rel_pos_norm.y;
         rel_pos_norm.x = -rel_pos_norm.x;
         // ^ aka offset direction
 
-        printf("rel pos norm: %f %f\n", rel_pos_norm.x, rel_pos_norm.y);
-
-        float constraint_mass = a->inv_mass + b->inv_mass;
-
-        printf("constraint mass: %f\n", constraint_mass);
+        float constraint_mass = a->inv_mass;
+        if(!joint->anchored_to_world)
+            constraint_mass += b->inv_mass;
 
         if(constraint_mass > 0) {
             float velocity_dot = lla_vec2_dot(relative_velocity, rel_pos_norm);
-            
-            printf("velocity dot: %f\n", velocity_dot);
-
-            float bias = -( bias_factor / deltatime ) * offset;
-            // bias = 0;
-            printf("bias: %f\n", bias);
-
+            float bias = -( bias_factor / deltatime ) * offset * spring_constant;
             float lambda = -( velocity_dot + bias ) / constraint_mass;
-
-            printf("lambda: %f\n", lambda);
 
             vec2_t a_impulse = lla_vec2_scale(rel_pos_norm, lambda);
             vec2_t b_impulse = lla_vec2_scale(lla_vec2_scale(rel_pos_norm,-1), lambda);
         
-            printf("a impulse: %f %f\n", a_impulse.x, a_impulse.y);
-            printf("b impulse: %f %f\n", b_impulse.x, b_impulse.y);
-
             a->vx += a_impulse.x * a->inv_mass;
             a->vy += a_impulse.y * a->inv_mass;
-            b->vx += b_impulse.x * b->inv_mass;
-            b->vy += b_impulse.y * b->inv_mass;
+            if(!joint->anchored_to_world && !b->is_static) {
+                b->vx += b_impulse.x * b->inv_mass;
+                b->vy += b_impulse.y * b->inv_mass;
+            }
         }
     }
-
-    printf("resolved velocity a: %f %f\n", a->vx, a->vy);
-    printf("resolved velocity b: %f %f\n", b->vx, b->vy);
-
-    printf("======================================\n");
-
 }
 
 void _p2d_resolve_joint(struct p2d_joint *joint, float delta_time) {
@@ -144,8 +130,8 @@ void _p2d_resolve_joint(struct p2d_joint *joint, float delta_time) {
     }
 
     switch(joint->type) {
-        case P2D_JOINT_DISTANCE:
-            _p2d_resolve_distance_joint(joint, delta_time);
+        case P2D_JOINT_SPRING:
+            _p2d_resolve_spring_joint(joint, delta_time);
             break;
         default:
             p2d_logf(P2D_LOG_ERROR, "_p2d_resolve_joint: Unknown joint type\n");

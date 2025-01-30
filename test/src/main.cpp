@@ -443,17 +443,43 @@ int main(int argc, char** argv) {
     objects.push_back(fcc);
     p2d_create_object(fcc.get());
 
+    auto springee = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        // .type = P2D_OBJECT_CIRCLE,
+        .is_static = false,
+        .x = 700,
+        .y = 400,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        .rotation = 0,
+        .rectangle= {
+            .width = 50,
+            .height = 50,
+        },
+        // .circle= {
+        //     .radius = 50,
+        // },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(springee);
+    p2d_create_object(springee.get());
+
     // add a joint
     auto joint = std::make_shared<p2d_joint>(p2d_joint{
         .a = f.get(),
         .b = fc.get(),
-        .type = P2D_JOINT_DISTANCE,
+        .type = P2D_JOINT_SPRING,
         .local_anchor_a = (vec2_t){.x = 0, .y = 0},
         .local_anchor_b = (vec2_t){.x = 0, .y = 0},
         // .local_anchor_b = (vec2_t){.x = 0, .y = -25},
         .bias_factor = 0.01f,
-        .distance = {
-            .length = 100,
+        .spring_joint = {
+            .rest_length = 100,
+            .spring_constant = 0.25,
         },
     });
     joints.push_back(joint);
@@ -462,17 +488,117 @@ int main(int argc, char** argv) {
     auto jointc = std::make_shared<p2d_joint>(p2d_joint{
         .a = fc.get(),
         .b = fcc.get(),
-        .type = P2D_JOINT_DISTANCE,
+        .type = P2D_JOINT_SPRING,
         .local_anchor_a = (vec2_t){.x = 0, .y = 0},
         .local_anchor_b = (vec2_t){.x = 0, .y = 0},
         // .local_anchor_b = (vec2_t){.x = 0, .y = -25},
         .bias_factor = 0.01f,
-        .distance = {
-            .length = 100,
+        .spring_joint = {
+            .rest_length = 100,
+            .spring_constant = 0.25,
         },
     });
     joints.push_back(jointc);
     p2d_add_joint(jointc.get());
+
+    auto jointfc = std::make_shared<p2d_joint>(p2d_joint{
+        .a = fc.get(),
+        .anchored_to_world = true,
+        .world_anchor_b = (vec2_t){.x = 600, .y = 400},
+        .type = P2D_JOINT_SPRING,
+        .local_anchor_a = (vec2_t){.x = 0, .y = 0},
+        // .local_anchor_b = (vec2_t){.x = 0, .y = -25},
+        .bias_factor = 0.01f,
+        .spring_joint = {
+            .rest_length = 100,
+            .spring_constant = 0.25,
+        },
+    });
+    joints.push_back(jointfc);
+    p2d_add_joint(jointfc.get());
+
+    auto spring = std::make_shared<p2d_joint>(p2d_joint{
+        .a = f.get(),
+        .b = springee.get(),
+        .type = P2D_JOINT_SPRING,
+        .local_anchor_a = (vec2_t){.x = 0, .y = 0},
+        .local_anchor_b = (vec2_t){.x = 0, .y = 0},
+        .bias_factor = 0.01f,
+        .spring_joint = {
+            .rest_length = 200,
+            // .spring_constant = 0.25,
+            .spring_constant = 1,
+        },
+    });
+    joints.push_back(spring);
+    p2d_add_joint(spring.get());
+
+    // door test
+
+    auto hinge = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_CIRCLE,
+        // .type = P2D_OBJECT_CIRCLE,
+        .is_static = true,
+        .x = 1400,
+        .y = 300,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        .rotation = 0,
+        .circle= {
+            .radius = 25,
+        },
+        // .circle= {
+        //     .radius = 50,
+        // },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(hinge);
+    p2d_create_object(hinge.get());
+
+    auto door = std::make_shared<p2d_object>(p2d_object{
+        .type = P2D_OBJECT_RECTANGLE,
+        // .type = P2D_OBJECT_CIRCLE,
+        .x = 1175,
+        .y = 275,
+        // .vx = 10,
+        // .vy = 10,
+        // .vr = -20,
+        .rotation = 0,
+        .rectangle= {
+            .width = 200,
+            .height = 50,
+        },
+        // .circle= {
+        //     .radius = 50,
+        // },
+        .density = 2,
+        .restitution = .5,
+        .static_friction = 1.0,
+        .dynamic_friction = 0.7,
+    });
+    objects.push_back(door);
+    p2d_create_object(door.get());
+
+    auto hingejoint = std::make_shared<p2d_joint>(p2d_joint{
+        .a = door.get(),
+        .b = hinge.get(),
+        .type = P2D_JOINT_SPRING,
+        .local_anchor_a = (vec2_t){.x = 100, .y = 0},
+        // .local_anchor_b = (vec2_t){.x = -25, .y = 0},
+        .local_anchor_b = (vec2_t){.x = 0, .y = 0},
+        .bias_factor = 0.01f,
+        .spring_joint = {
+            .rest_length = 10,
+            .spring_constant = 0.25,
+        },
+    });
+    joints.push_back(hingejoint);
+    p2d_add_joint(hingejoint.get());
+
 
     // auto ball = std::make_shared<p2d_object>(p2d_object{
     //     .type = P2D_OBJECT_RECTANGLE,
@@ -678,10 +804,16 @@ int main(int argc, char** argv) {
             struct p2d_joint j = *joint.get();
 
             p2d_object a = *j.a;
-            p2d_object b = *j.b;
 
+            vec2_t world_anchor_b;
+            if(!joint->anchored_to_world) {
+                p2d_object b = *j.b;
+                world_anchor_b = p2d_get_joint_world_anchor(j.b, j.local_anchor_b);
+            }
+            else {
+                world_anchor_b = j.world_anchor_b;
+            }
             vec2_t world_anchor_a = p2d_get_joint_world_anchor(j.a, j.local_anchor_a);
-            vec2_t world_anchor_b = p2d_get_joint_world_anchor(j.b, j.local_anchor_b);
 
             SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
             SDL_RenderLine(renderer, world_anchor_a.x, world_anchor_a.y, world_anchor_b.x, world_anchor_b.y);
