@@ -585,16 +585,13 @@ int main(int argc, char** argv) {
 
     auto hingejoint = std::make_shared<p2d_joint>(p2d_joint{
         .a = door.get(),
-        .b = hinge.get(),
-        .type = P2D_JOINT_SPRING,
+        // .b = hinge.get(),
+        .anchored_to_world = true,
+        .world_anchor_b = (vec2_t){.x = 1375, .y = 300},
+        .type = P2D_JOINT_HINGE,
         .local_anchor_a = (vec2_t){.x = 100, .y = 0},
         // .local_anchor_b = (vec2_t){.x = -25, .y = 0},
-        .local_anchor_b = (vec2_t){.x = 0, .y = 0},
         .bias_factor = 0.01f,
-        .spring_joint = {
-            .rest_length = 10,
-            .spring_constant = 0.25,
-        },
     });
     joints.push_back(hingejoint);
     p2d_add_joint(hingejoint.get());

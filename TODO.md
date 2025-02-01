@@ -9,9 +9,13 @@ attune deltatime for debugger so you can do more than one frame
 
 future:
 
-- add joints!!
-
 - add collision layers
 
 ontriggerenter ontriggerexit ontriggerstay
 / general callback improvement
+
+<https://github.com/erincatto/box2d/blob/main/src/revolute_joint.c>
+
+- add revolute/hinge
+- add weld????
+- maybe some way to approximate ACTUAL rigid rod (game physics engine book - approximating true stiff springs)

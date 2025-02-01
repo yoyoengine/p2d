@@ -316,6 +316,47 @@ void p2d_separate_bodies(struct p2d_object *a, struct p2d_object *b, vec2_t norm
     }
 }
 
+bool p2d_should_collide(struct p2d_object *a, struct p2d_object *b) {
+    if(a->is_trigger && b->is_trigger) {
+        return false;
+    }
+
+    if(a->is_static && b->is_static) {
+        return false;
+    }
+
+    // TODO: layer masks
+
+    /*
+        Find any joints between these two objects, to check if they have their
+        collisions disabled. We also take the liberty to force this for hinges
+        
+        TODO: early out by counting joints seen vs registered
+    */
+    for(int i = 0; i < P2D_MAX_JOINTS; i++) {
+        struct p2d_joint *joint = p2d_joints[i];
+        if(joint == NULL) {
+            continue;
+        }
+
+        if(joint->anchored_to_world) {
+            continue;
+        }
+
+        if((joint->a == a && joint->b == b) || (joint->a == b && joint->b == a)) {
+            if(joint->disable_collisions) {
+                return false;
+            }
+
+            if(joint->type == P2D_JOINT_HINGE) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 // struct p2d_contact_list * p2d_step(float delta_time) {
 void p2d_step(float delta_time) {
     // struct p2d_contact_list *every_contact = p2d_contact_list_create(25);
@@ -376,7 +417,12 @@ void p2d_step(float delta_time) {
                     struct p2d_object *a = node_a->object;
                     struct p2d_object *b = node_b->object;
 
-                    if(a->is_static && b->is_static) {
+                    /*
+                        last check - might be expensive (profile)
+                        we want to see if they are even eligible to collide,
+                        taking a collision mask and some other meta like if they revolute each other into account
+                    */
+                    if(!p2d_should_collide(a, b)) {
                         node_b = node_b->next;
                         continue;
                     }

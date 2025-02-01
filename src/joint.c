@@ -106,7 +106,7 @@ void _p2d_resolve_spring_joint(struct p2d_joint *joint, float deltatime) {
 
         if(constraint_mass > 0) {
             float velocity_dot = lla_vec2_dot(relative_velocity, rel_pos_norm);
-            float bias = -( bias_factor / deltatime ) * offset * spring_constant;
+            float bias = -( bias_factor / deltatime ) * offset * spring_constant; // TODO: should the constant be included here in bias?
             float lambda = -( velocity_dot + bias ) / constraint_mass;
 
             vec2_t a_impulse = lla_vec2_scale(rel_pos_norm, lambda);
@@ -122,6 +122,58 @@ void _p2d_resolve_spring_joint(struct p2d_joint *joint, float deltatime) {
     }
 }
 
+/*
+    This is a stupid, completely made up hinge joint.
+
+    It just pins the overlap points together, and relies on the other part of the solver
+    to get angular impulse. The problem with that is the other solver has no concept of rotation about this hinge point,
+    and instead calculates it about the center, meaning we have a problem for this.abs
+
+    To be honest, I'm totally done with this engine right now, so I'm leaving this for future me to fix.abs
+    If youre me reading this in the future: <https://tenor.com/view/xqc-middle-finger-gif-13191308>
+*/
+void _p2d_resolve_hinge_joint(struct p2d_joint *joint, float deltatime) {
+    struct p2d_object *a = joint->a;
+    struct p2d_object *b = NULL;
+    bool anchored_to_world = joint->anchored_to_world;
+
+    if(!anchored_to_world)
+        b = joint->b;
+    
+    vec2_t world_anchor_a = p2d_get_joint_world_anchor(joint->a, joint->local_anchor_a);
+
+    vec2_t world_anchor_b;
+    if(joint->anchored_to_world)
+        world_anchor_b = joint->world_anchor_b;
+    else
+        world_anchor_b = p2d_get_joint_world_anchor(joint->b, joint->local_anchor_b);
+    
+    vec2_t anchor_diff = lla_vec2_sub(world_anchor_a, world_anchor_b);
+    if(a->is_static && !anchored_to_world) {
+        b->x += anchor_diff.x;
+        b->y += anchor_diff.y;
+    } else if(anchored_to_world) {
+        a->x -= anchor_diff.x;
+        a->y -= anchor_diff.y;
+    } else {
+        a->x -= anchor_diff.x / 2;
+        a->y -= anchor_diff.y / 2;
+        if(!anchored_to_world) {
+            b->x += anchor_diff.x / 2;
+            b->y += anchor_diff.y / 2;
+        }
+    }
+
+    a->vx = 0;
+    a->vy = 0;
+    if(b) {
+        b->vx = 0;
+        b->vy = 0;
+    }
+
+    (void)deltatime;
+}
+
 void _p2d_resolve_joint(struct p2d_joint *joint, float delta_time) {
 
     if(!joint) {
@@ -132,6 +184,9 @@ void _p2d_resolve_joint(struct p2d_joint *joint, float delta_time) {
     switch(joint->type) {
         case P2D_JOINT_SPRING:
             _p2d_resolve_spring_joint(joint, delta_time);
+            break;
+        case P2D_JOINT_HINGE:
+            _p2d_resolve_hinge_joint(joint, delta_time);
             break;
         default:
             p2d_logf(P2D_LOG_ERROR, "_p2d_resolve_joint: Unknown joint type\n");

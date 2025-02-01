@@ -68,8 +68,8 @@ p2d_shutdown();
 | Debug Resolution    | The current basic resolution has edge cases | High     | Done            |
 | Rotation Resolution | Implement rotation and torque               | High     | Done            |
 | Friction Resolution | Implement friction                          | High     | Done            |
-| Joints              | Constraints between objects                 | High     | In Progress     |
-| Collision Layers    | Specify what can collide with what          | Medium   | Planned         |
+| Joints              | Constraints between objects                 | High     | Mostly Done     |
+| Collision Layers    | Specify what can collide with what          | Medium   | In Progress     |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |
@@ -88,3 +88,11 @@ Here are some resources that helped me along the way, which can hopefully be use
 - [(Youtube) Two-Bit Coding Physics Engine Playlist](https://www.youtube.com/playlist?list=PLSlpr6o9vURwq3oxVZSimY8iC-cdd3kIs)
 - [(Articles) Rigid Body Dyanmics - Chris Hecker](https://www.chrishecker.com/Rigid_Body_Dynamics)
 - [(Reference Example) Box2D](https://github.com/erincatto/box2d-lite/tree/master/Box2D)
+
+## Advice
+
+If I were to write this again from scratch, I would:
+
+- Avoid writing a physics engine at all, unless I was doing it for fun or learning (it's really really hard)
+- define rectangles by half extents, because their x,y position should be the center, not the top left (mixing with circles that have x,y as center is a huge pain)
+- use radians instead of degrees internally (the conversion is a big failure point)

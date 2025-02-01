@@ -49,6 +49,9 @@ void _p2d_apply_air_resistance(struct p2d_object *object, float delta_time) {
     object->vx -= (rx * delta_time);
     object->vy -= (ry * delta_time);
 
+    // if(object->vr > 0.00001f)
+        // object->vr *= 0.99f;
+
     // TODO: angular drag
 }
 

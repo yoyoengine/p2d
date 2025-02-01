@@ -190,8 +190,8 @@ struct p2d_object {
 
 // TODO: damping
 enum p2d_joint_type { // distance is a spring with coef 1
-    P2D_JOINT_SPRING
-    // P2D_JOINT_HINGE,
+    P2D_JOINT_SPRING,
+    P2D_JOINT_HINGE,
     // P2D_JOINT_WELD,
 };
 
@@ -211,11 +211,15 @@ struct p2d_joint {
 
     float bias_factor;
 
+    bool disable_collisions;
+
     union {
         struct {
             float rest_length;
             float spring_constant;
         } spring_joint;
+        // struct {
+        // } hinge_joint;
     };
 };
 
@@ -259,6 +263,15 @@ P2D_API bool p2d_remove_object(struct p2d_object *object);
     Remove all objects from the simulation
 */
 P2D_API bool p2d_remove_all_objects(void);
+
+/*
+    Computes whether or not two objects are eligible collision canidates,
+    from their bitmasks and other considerations (like constraints)
+
+    TODO: this could use an optimized lookup cache or some other O(1) solution
+    that doesnt involve querying joints
+*/
+P2D_API bool p2d_should_collide(struct p2d_object *a, struct p2d_object *b);
 
 /*
     Called externally to run one simulation step
