@@ -19,6 +19,8 @@ A 2D rigidbody physics system written for yoyoengine.
 - Collision and trigger callbacks
 - Easy synchronization with existing ECS
 - Frustum-culled sleeping objects
+- Spring and Hinge Joints
+- Collision layers
 
 > [!WARNING]  
 > Internal rotations are stored in degrees (not radians!) so make sure you convert properly.
@@ -39,7 +41,7 @@ void trigger_callback(struct p2d_cb_data* data) {
 }
 
 // at some point during init
-p2d_init(TILE_SIZE, SUBSTEP_COUNT, collision_callback, trigger_callback);
+p2d_init(..., trigger_callback);
 
 // create and register objects
 // ...
@@ -51,6 +53,7 @@ obj.vx = 100;
 obj.out_x = &YOUR_ECS_X;
 obj.out_y = &YOUR_ECS_Y;
 obj.out_rotation = &YOUR_ECS_ROTATION;
+obj.mask = P2D_LAYER_1 & P2D_LAYER_2;
 p2d_register_object(&obj);
 // ...
 
@@ -69,7 +72,7 @@ p2d_shutdown();
 | Rotation Resolution | Implement rotation and torque               | High     | Done            |
 | Friction Resolution | Implement friction                          | High     | Done            |
 | Joints              | Constraints between objects                 | High     | Mostly Done     |
-| Collision Layers    | Specify what can collide with what          | Medium   | In Progress     |
+| Collision Layers    | Specify what can collide with what          | Medium   | Mostly Done     |
 | Advanced Gravity    | Allow seperate spatial fields of gravity    | Low      | Maybe Later     |
 | New Shapes          | Implement planes for more complex shapes    | Low      | Maybe Later     |
 | Optimization        | Micro-optimize for performance              | Low      | Maybe Later     |

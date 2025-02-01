@@ -152,15 +152,36 @@ void _p2d_resolve_hinge_joint(struct p2d_joint *joint, float deltatime) {
     if(a->is_static && !anchored_to_world) {
         b->x += anchor_diff.x;
         b->y += anchor_diff.y;
+
+        if(b->out_x && b->out_y) {
+            *b->out_x += anchor_diff.x;
+            *b->out_y += anchor_diff.y;
+        }
     } else if(anchored_to_world) {
         a->x -= anchor_diff.x;
         a->y -= anchor_diff.y;
+
+        if(a->out_x && a->out_y) {
+            *a->out_x -= anchor_diff.x;
+            *a->out_y -= anchor_diff.y;
+        }
     } else {
         a->x -= anchor_diff.x / 2;
         a->y -= anchor_diff.y / 2;
+
+        if(a->out_x && a->out_y) {
+            *a->out_x -= anchor_diff.x / 2;
+            *a->out_y -= anchor_diff.y / 2;
+        }
+        
         if(!anchored_to_world) {
             b->x += anchor_diff.x / 2;
             b->y += anchor_diff.y / 2;
+
+            if(b->out_x && b->out_y) {
+                *b->out_x += anchor_diff.x / 2;
+                *b->out_y += anchor_diff.y / 2;
+            }
         }
     }
 

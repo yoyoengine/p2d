@@ -325,7 +325,9 @@ bool p2d_should_collide(struct p2d_object *a, struct p2d_object *b) {
         return false;
     }
 
-    // TODO: layer masks
+    if((a->mask & b->mask) == 0) {
+        return false;
+    }
 
     /*
         Find any joints between these two objects, to check if they have their

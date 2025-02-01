@@ -138,6 +138,7 @@ void spawn_circle(int x, int y) {
         // .inertia = 0.5,
         .static_friction = 1.0,
         .dynamic_friction = 0.7,
+        .mask = 1
     });
     objects.push_back(obj);
 
@@ -165,6 +166,7 @@ void spawn_rect(int x, int y) {
         .static_friction = 1.0,
         // .dynamic_friction = 0.7,
         .dynamic_friction = 0.7,
+        .mask = 2
     });
     objects.push_back(obj);
 

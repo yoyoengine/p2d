@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#include <stdint.h>
+
 // compile time parameters
 #ifndef P2D_MAX_OBJECTS
     #define P2D_MAX_OBJECTS 2000
@@ -114,6 +116,27 @@ enum p2d_object_type {
     P2D_OBJECT_CIRCLE
 };
 
+// just a helper for user to use
+enum p2d_collision_layer {
+    P2D_LAYER_1 = 1 << 0,
+    P2D_LAYER_2 = 1 << 1,
+    P2D_LAYER_3 = 1 << 2,
+    P2D_LAYER_4 = 1 << 3,
+    P2D_LAYER_5 = 1 << 4,
+    P2D_LAYER_6 = 1 << 5,
+    P2D_LAYER_7 = 1 << 6,
+    P2D_LAYER_8 = 1 << 7,
+    P2D_LAYER_9 = 1 << 8,
+    P2D_LAYER_10 = 1 << 9,
+    P2D_LAYER_11 = 1 << 10,
+    P2D_LAYER_12 = 1 << 11,
+    P2D_LAYER_13 = 1 << 12,
+    P2D_LAYER_14 = 1 << 13,
+    P2D_LAYER_15 = 1 << 14,
+    P2D_LAYER_16 = 1 << 15,
+    P2D_LAYER_ALL = 0xFFFF
+};
+
 // TODO: allow frozen axes?
 struct p2d_object {
     // defining information
@@ -173,6 +196,8 @@ struct p2d_object {
         States
     */
     bool sleeping;
+
+    uint16_t mask;
 
     /*
         in/out reference values

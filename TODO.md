@@ -19,3 +19,5 @@ ontriggerenter ontriggerexit ontriggerstay
 - add revolute/hinge
 - add weld????
 - maybe some way to approximate ACTUAL rigid rod (game physics engine book - approximating true stiff springs)
+
+add mask that can set layer-to-layer collisions rather than just shared
