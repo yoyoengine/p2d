@@ -191,7 +191,7 @@ bool p2d_create_object(struct p2d_object *object) {
         case P2D_OBJECT_CIRCLE:
             object->circle.radius_meters = object->circle.radius / P2D_PIXELS_PER_METER;
 
-            object->area = M_PI * object->circle.radius_meters * object->circle.radius_meters;
+            object->area = (float)M_PI * object->circle.radius_meters * object->circle.radius_meters;
             break;
     }
 

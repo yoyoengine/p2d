@@ -31,7 +31,7 @@ void _p2d_apply_air_resistance(struct p2d_object *object, float delta_time) {
             break;
         case P2D_OBJECT_CIRCLE:
             drag_coefficient = 1.17f;
-            xc_area = M_PI * object->circle.radius_meters * object->circle.radius_meters;
+            xc_area = (float)M_PI * object->circle.radius_meters * object->circle.radius_meters;
             break;
         default:
             p2d_logf(P2D_LOG_WARN, "_p2d_apply_air_resistance: object type not recognized.\n");
@@ -149,7 +149,7 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         vec2_t ra_perp = (vec2_t){.data={-ra.y, ra.x}};
         vec2_t rb_perp = (vec2_t){.data={-rb.y, rb.x}};
 
-        float c = M_PI / 180.0f;
+        float c = (float)M_PI / 180.0f;
 
         // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
@@ -219,7 +219,7 @@ void _p2d_rotational_resolution(struct p2d_collision_manifold *manifold) {
         a_ang_vel_delta *= obj_a->inv_inertia;
 
         // compiler will optimize
-        float c = 180.0f / M_PI;
+        float c = 180.0f / (float)M_PI;
 
         // radians -> degrees
         a_ang_vel_delta *= c;
@@ -274,7 +274,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         vec2_t ra_perp = (vec2_t){.data={-ra.y, ra.x}};
         vec2_t rb_perp = (vec2_t){.data={-rb.y, rb.x}};
 
-        float c = M_PI / 180.0f;
+        float c = (float)M_PI / 180.0f;
 
         // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
@@ -349,7 +349,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         a_ang_vel_delta *= obj_a->inv_inertia;
 
         // compiler will optimize
-        float c = 180.0f / M_PI;
+        float c = 180.0f / (float)M_PI;
 
         // radians -> degrees
         a_ang_vel_delta *= c;
@@ -385,7 +385,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         vec2_t ra_perp = (vec2_t){.data={-ra.y, ra.x}};
         vec2_t rb_perp = (vec2_t){.data={-rb.y, rb.x}};
 
-        float c = M_PI / 180.0f;
+        float c = (float)M_PI / 180.0f;
 
         // degrees -> radians
         float a_ang_radians = obj_a->vr * c;
@@ -472,7 +472,7 @@ void _p2d_rotational_friction_resolution(struct p2d_collision_manifold *manifold
         a_ang_vel_delta *= obj_a->inv_inertia;
 
         // compiler will optimize
-        float c = 180.0f / M_PI;
+        float c = 180.0f / (float)M_PI;
 
         // radians -> degrees
         a_ang_vel_delta *= c;
