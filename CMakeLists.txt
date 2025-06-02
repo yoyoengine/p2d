@@ -5,6 +5,8 @@ project(p2d)
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
+set(CMAKE_CXX_STANDARD 20)
+
 # build with debug symbols
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -37,6 +39,9 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         $<$<NOT:$<CONFIG:Debug>>:/W4>
     )
 endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 ###############
 #   Lilith    #
@@ -87,4 +92,9 @@ if(BUILD_P2D_TESTS)
     # p2d
     target_link_libraries(p2d-test PRIVATE p2d)
     target_include_directories(p2d-test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+    # MSVC specific warning suppression for test target
+    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        target_compile_options(p2d-test PRIVATE /wd4576)
+    endif()
 endif()
