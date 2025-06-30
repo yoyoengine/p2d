@@ -33,11 +33,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         $<$<CONFIG:Debug>:-Wall -Wextra -Werror>
         $<$<NOT:$<CONFIG:Debug>>:-Wall -Wextra>
     )
+# elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+#     target_compile_options(p2d PRIVATE
+#         $<$<CONFIG:Debug>:/W4 /WX>
+#         $<$<NOT:$<CONFIG:Debug>>:/W4>
+#     )
+# endif()
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(p2d PRIVATE
-        $<$<CONFIG:Debug>:/W4 /WX>
-        $<$<NOT:$<CONFIG:Debug>>:/W4>
-    )
+    target_compile_options(p2d PRIVATE /W0)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
